@@ -1,0 +1,1025 @@
+/* ==========================================================================
+   EduBraille Games — Design System & Accessibility Stylesheet
+   ========================================================================== */
+
+/* --- Variáveis de Tema (Design Tokens) --- */
+:root {
+  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-base: 1.125rem; /* 18px base para legibilidade ampliada */
+
+  /* Cores Padrão (Tema Claro) */
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --border-color: #cbd5e1;
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-light: #dbeafe;
+  --primary-text: #ffffff;
+
+  --accent-amber: #d97706;
+  --accent-amber-light: #fef3c7;
+
+  --success-bg: #dcfce7;
+  --success-text: #166534;
+  --success-border: #22c55e;
+
+  --danger-bg: #fee2e2;
+  --danger-text: #991b1b;
+  --danger-border: #ef4444;
+
+  /* Células Braille */
+  --braille-dot-active: #2563eb;
+  --braille-dot-active-shadow: rgba(37, 99, 235, 0.4);
+  --braille-dot-inactive: #e2e8f0;
+  --braille-dot-border: #94a3b8;
+
+  /* Foco e Acessibilidade */
+  --focus-outline: 4px solid #f59e0b;
+  --focus-outline-offset: 3px;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.12);
+  --radius-md: 12px;
+  --radius-lg: 20px;
+}
+
+/* --- Tema Escuro --- */
+body.theme-dark {
+  --bg-main: #0f172a;
+  --bg-card: #1e293b;
+  --bg-card-hover: #334155;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #475569;
+
+  --primary: #38bdf8;
+  --primary-hover: #0284c7;
+  --primary-light: #0369a1;
+  --primary-text: #0f172a;
+
+  --accent-amber: #f59e0b;
+  --accent-amber-light: #78350f;
+
+  --braille-dot-active: #38bdf8;
+  --braille-dot-active-shadow: rgba(56, 189, 248, 0.5);
+  --braille-dot-inactive: #334155;
+  --braille-dot-border: #64748b;
+}
+
+/* --- Tema Alto Contraste (Amarelo / Preto) --- */
+body.theme-high-contrast-yellow {
+  --bg-main: #000000;
+  --bg-card: #121212;
+  --bg-card-hover: #262626;
+  --text-main: #ffff00;
+  --text-muted: #ffff80;
+  --border-color: #ffff00;
+
+  --primary: #ffff00;
+  --primary-hover: #e6e600;
+  --primary-light: #333300;
+  --primary-text: #000000;
+
+  --accent-amber: #ffff00;
+  --accent-amber-light: #333300;
+
+  --braille-dot-active: #ffff00;
+  --braille-dot-active-shadow: rgba(255, 255, 0, 0.8);
+  --braille-dot-inactive: #333333;
+  --braille-dot-border: #ffff00;
+  --focus-outline: 5px solid #ffffff;
+}
+
+/* --- Tema Alto Contraste (Ciano / Preto) --- */
+body.theme-high-contrast-cyan {
+  --bg-main: #000000;
+  --bg-card: #121212;
+  --bg-card-hover: #262626;
+  --text-main: #00ffff;
+  --text-muted: #80ffff;
+  --border-color: #00ffff;
+
+  --primary: #00ffff;
+  --primary-hover: #00cccc;
+  --primary-light: #003333;
+  --primary-text: #000000;
+
+  --accent-amber: #00ffff;
+  --accent-amber-light: #003333;
+
+  --braille-dot-active: #00ffff;
+  --braille-dot-active-shadow: rgba(0, 255, 255, 0.8);
+  --braille-dot-inactive: #333333;
+  --braille-dot-border: #00ffff;
+  --focus-outline: 5px solid #ffffff;
+}
+
+/* --- Reset & Globais --- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: var(--font-size-base);
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Estilos de Foco Visível para Navegação por Teclado / Linha Braille */
+:focus-visible {
+  outline: var(--focus-outline) !important;
+  outline-offset: var(--focus-outline-offset) !important;
+  z-index: 10;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Cabeçalho e Barra Superior --- */
+.site-header {
+  background: var(--bg-card);
+  border-bottom: 2px solid var(--border-color);
+  padding: 1rem 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.header-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.brand-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.brand-icon {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.teacher-mode-badge {
+  background-color: var(--accent-amber-light);
+  color: var(--accent-amber);
+  border: 2px solid var(--accent-amber);
+  padding: 0.25rem 0.75rem;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+/* --- Botões Utilitários --- */
+.btn {
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--primary-text);
+}
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  border-color: var(--border-color);
+}
+.btn-secondary:hover {
+  background-color: var(--bg-card-hover);
+}
+
+.btn-toggle-teacher {
+  background-color: var(--accent-amber-light);
+  color: var(--accent-amber);
+  border-color: var(--accent-amber);
+}
+.btn-toggle-teacher.active {
+  background-color: var(--accent-amber);
+  color: #ffffff;
+}
+
+.btn-sound-mini {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  padding: 0.35rem 0.65rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.btn-sound-mini:hover {
+  filter: brightness(0.95);
+}
+
+/* --- Conteúdo Principal --- */
+.main-layout {
+  max-width: 1300px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+  width: 100%;
+  flex: 1;
+}
+
+/* --- Componente Dual Tinta + Braille --- */
+.dual-cell-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  user-select: none;
+}
+.dual-cell-card:hover, .dual-cell-card:focus {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+
+.dual-cell-card.medium {
+  min-width: 110px;
+  min-height: 170px;
+}
+.dual-cell-card.large {
+  min-width: 140px;
+  min-height: 210px;
+}
+.dual-cell-card.small {
+  min-width: 85px;
+  min-height: 130px;
+  padding: 0.5rem;
+}
+
+.dual-cell-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border-bottom: 1px dashed var(--border-color);
+  padding-bottom: 0.35rem;
+}
+
+.ink-char-display {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1;
+}
+.dual-cell-card.small .ink-char-display { font-size: 1.3rem; }
+.dual-cell-card.large .ink-char-display { font-size: 2.5rem; }
+
+.braille-unicode-display {
+  font-size: 1.6rem;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.dual-cell-body {
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.number-prefix-badge {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--accent-amber);
+  margin-right: 0.35rem;
+}
+
+/* Grid de 6 Pontos Braille */
+.braille-dots-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--bg-main);
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+}
+
+.dots-row {
+  display: flex;
+  gap: 8px;
+}
+
+.braille-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--braille-dot-border);
+  background-color: var(--braille-dot-inactive);
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.dual-cell-card.large .braille-dot { width: 28px; height: 28px; }
+.dual-cell-card.small .braille-dot { width: 16px; height: 16px; }
+
+.braille-dot.active {
+  background-color: var(--braille-dot-active);
+  border-color: var(--braille-dot-active);
+  box-shadow: 0 0 10px var(--braille-dot-active-shadow);
+  transform: scale(1.1);
+}
+
+.dot-number {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #ffffff;
+  position: absolute;
+}
+.braille-dot.inactive .dot-number {
+  color: var(--text-muted);
+}
+
+.dual-cell-footer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+.dots-text-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* --- Feed de Jogos --- */
+.feed-header-banner {
+  background: linear-gradient(135deg, var(--primary), #1e3a8a);
+  color: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: var(--shadow-md);
+}
+.feed-header-banner h1 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+}
+.feed-header-banner p {
+  font-size: 1.2rem;
+  opacity: 0.95;
+}
+
+.feed-filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  background: var(--bg-card);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+.filter-label {
+  font-weight: 700;
+  margin-right: 0.5rem;
+}
+.btn-filter {
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.btn-filter.active {
+  background: var(--primary);
+  color: var(--primary-text);
+  border-color: var(--primary);
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.game-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25 ease;
+}
+.game-card:hover, .game-card:focus {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
+}
+
+.card-badge-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.symbol-badge {
+  font-size: 2rem;
+  background: var(--primary-light);
+  color: var(--primary);
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+.levels-pills {
+  display: flex;
+  gap: 0.35rem;
+}
+.level-pill {
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+}
+.level-pill.iniciante { background: #dcfce7; color: #166534; }
+.level-pill.intermediario { background: #fef3c7; color: #92400e; }
+.level-pill.avancado { background: #fee2e2; color: #991b1b; }
+
+.game-card-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+.game-card-summary {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.game-card-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+.btn-play {
+  flex: 1;
+  background: var(--primary);
+  color: var(--primary-text);
+}
+.btn-audio-card {
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+}
+
+/* --- Container Genérico do Jogo Ativo --- */
+.game-wrapper {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.game-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.game-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.badge {
+  padding: 0.35rem 0.85rem;
+  border-radius: 50px;
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+.badge-success { background: var(--success-bg); color: var(--success-text); }
+.badge-danger { background: var(--danger-bg); color: var(--danger-text); }
+
+.instructions-banner {
+  background: var(--primary-light);
+  color: var(--text-main);
+  border-left: 5px solid var(--primary);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+
+.teacher-solution-box {
+  background: var(--accent-amber-light);
+  color: var(--accent-amber);
+  border: 2px solid var(--accent-amber);
+  padding: 0.85rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.game-actions-bar {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* --- Estilos Específicos dos Jogos --- */
+
+/* Jogo 1: Forca */
+.hangman-word-slots {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+}
+.virtual-keyboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+.key-btn {
+  background: var(--bg-main);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.5rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.key-btn.correct { background: var(--success-bg); border-color: var(--success-border); }
+.key-btn.wrong { background: var(--danger-bg); border-color: var(--danger-border); opacity: 0.6; }
+
+/* Jogo 2: Caça-Palavras */
+.wordsearch-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 2rem;
+}
+@media (max-width: 900px) {
+  .wordsearch-layout { grid-template-columns: 1fr; }
+}
+.wordsearch-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--bg-main);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+.grid-row { display: flex; gap: 6px; justify-content: center; }
+.grid-cell-btn {
+  width: 50px;
+  height: 55px;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  cursor: pointer;
+}
+.grid-cell-btn.selected {
+  background: var(--primary);
+  color: var(--primary-text);
+  border-color: var(--primary);
+}
+
+.target-word-item {
+  background: var(--bg-main);
+  border: 1px solid var(--border-color);
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+}
+.target-word-item.found {
+  background: var(--success-bg);
+  border-color: var(--success-border);
+  color: var(--success-text);
+  text-decoration: line-through;
+}
+
+/* Jogo 3: Cruzadas */
+.crossword-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+}
+@media (max-width: 900px) {
+  .crossword-layout { grid-template-columns: 1fr; }
+}
+.crossword-grid {
+  display: grid;
+  gap: 8px;
+  background: var(--bg-main);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+}
+.crossword-cell {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+}
+.crossword-cell.black-cell {
+  background: var(--text-main);
+  border-color: var(--text-main);
+}
+.cell-number {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: var(--primary);
+}
+.cell-input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--text-main);
+  text-transform: uppercase;
+}
+.cell-dual-overlay {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* Jogo 4: Cruzadas Silábicas */
+.syllable-slots-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+.syllable-card {
+  min-width: 110px;
+  min-height: 110px;
+  background: var(--bg-card);
+  border: 3px dashed var(--border-color);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  cursor: pointer;
+}
+.syllable-card.filled {
+  border-style: solid;
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+.syllable-ink { font-size: 1.8rem; font-weight: 900; }
+.syllable-braille { font-size: 1.6rem; }
+.syllable-bank {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.syllable-option-btn {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  min-width: 90px;
+  cursor: pointer;
+}
+
+/* Jogo 5: Cruzadas Numéricas */
+.math-digits-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1.5rem 0;
+}
+.numpad-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.75rem;
+  max-width: 500px;
+  margin: 1.5rem auto;
+}
+.numpad-btn {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Jogo 6: Sudoku */
+.sudoku-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 380px;
+  margin: 1.5rem auto;
+  background: var(--bg-main);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+}
+.sudoku-row { display: flex; gap: 8px; }
+.sudoku-cell {
+  flex: 1;
+  aspect-ratio: 1;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  font-weight: 900;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.sudoku-cell.fixed { background: var(--bg-main); opacity: 0.8; }
+.sudoku-cell.selected { border-color: var(--primary); background: var(--primary-light); }
+.sudoku-numpad {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+.sudoku-num-btn {
+  width: 70px;
+  height: 70px;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-weight: 900;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+/* Jogo 7: Memória */
+.memory-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.memory-card-btn {
+  aspect-ratio: 0.8;
+  perspective: 1000px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease;
+  border-radius: var(--radius-md);
+}
+.memory-card-btn.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+.card-front, .card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+}
+.card-front {
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+  color: #ffffff;
+}
+.card-back {
+  background: var(--bg-card);
+  transform: rotateY(180deg);
+}
+
+/* Jogo 8: Bingo */
+.bingo-layout {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2rem;
+}
+@media (max-width: 850px) {
+  .bingo-layout { grid-template-columns: 1fr; }
+}
+.bingo-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+.bingo-cell-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+.bingo-stamp {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 3rem;
+  color: var(--success-border);
+  font-weight: 900;
+}
+
+/* Jogo 9: Ligue os Pontos */
+.match-columns-container {
+  display: grid;
+  grid-template-columns: 1fr 60px 1fr;
+  gap: 1.5rem;
+  align-items: center;
+  margin: 1.5rem 0;
+}
+.match-column { display: flex; flex-direction: column; gap: 1rem; }
+.match-item-btn {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  font-weight: 900;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.match-item-btn.selected { border-color: var(--primary); background: var(--primary-light); }
+.match-item-btn.matched { background: var(--success-bg); border-color: var(--success-border); }
+
+/* Jogo 10: Monte a Sílaba */
+.assembled-slots-row, .syllable-pool-row {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+.assembled-syl-btn, .pool-syl-btn {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.5rem;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* --- Modais --- */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.6);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+.modal.show { display: flex; }
+.modal-content {
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  max-width: 650px;
+  width: 100%;
+  padding: 2rem;
+  box-shadow: var(--shadow-lg);
+  border: 2px solid var(--border-color);
+}
+
+/* --- Rodapé --- */
+.site-footer {
+  background: var(--bg-card);
+  border-top: 2px solid var(--border-color);
+  padding: 1.5rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-top: auto;
+}
