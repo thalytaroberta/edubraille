@@ -1,6 +1,5 @@
 /**
- * EduBraille Feed de Jogos
- * Exibe a lista de cards dos 12 jogos pedagógicos com suporte a filtro por nível, tema e seleção direta.
+ * EduBraille Feed de Jogos — Módulo de Catálogo e Filtros de Nível/Tema
  */
 
 const GameFeed = (() => {
@@ -105,6 +104,7 @@ const GameFeed = (() => {
 
   let activeFilterLevel = 'todos';
   let activeCategoryTheme = 'aleatorio';
+  const cardSelectedLevels = {};
 
   function renderFeed(containerId) {
     const container = document.getElementById(containerId);
@@ -115,16 +115,16 @@ const GameFeed = (() => {
     let html = `
       <div class="feed-filter-bar" role="toolbar" aria-label="Filtros de nível e tema de palavras">
         <div class="filter-group">
-          <span class="filter-label">🎯 Nível:</span>
-          <button type="button" class="btn-filter ${activeFilterLevel === 'todos' ? 'active' : ''}" onclick="GameFeed.setFilterLevel('todos')">Todos os Jogos</button>
+          <span class="filter-label">🎯 Filtrar Nível:</span>
+          <button type="button" class="btn-filter ${activeFilterLevel === 'todos' ? 'active' : ''}" onclick="GameFeed.setFilterLevel('todos')">Todos os Jogos (12)</button>
           <button type="button" class="btn-filter ${activeFilterLevel === 'iniciante' ? 'active' : ''}" onclick="GameFeed.setFilterLevel('iniciante')">Iniciante</button>
           <button type="button" class="btn-filter ${activeFilterLevel === 'intermediario' ? 'active' : ''}" onclick="GameFeed.setFilterLevel('intermediario')">Intermediário</button>
           <button type="button" class="btn-filter ${activeFilterLevel === 'avancado' ? 'active' : ''}" onclick="GameFeed.setFilterLevel('avancado')">Avançado (Difícil)</button>
         </div>
 
         <div class="filter-group theme-filter-group">
-          <label for="theme-category-select" class="filter-label">🏷️ Tema das Palavras:</label>
-          <select id="theme-category-select" class="form-select theme-select-dropdown" onchange="GameFeed.setCategoryTheme(this.value)" aria-label="Escolher tema de palavras">
+          <label for="theme-category-select" class="filter-label">🏷️ Tema de Vocabulário:</label>
+          <select id="theme-category-select" class="theme-select-dropdown" onchange="GameFeed.setCategoryTheme(this.value)" aria-label="Escolher tema de palavras">
             <option value="aleatorio" ${activeCategoryTheme === 'aleatorio' ? 'selected' : ''}>🎲 Tema Aleatório (Todos)</option>
             <option value="musica" ${activeCategoryTheme === 'musica' ? 'selected' : ''}>🎵 Música</option>
             <option value="geografia" ${activeCategoryTheme === 'geografia' ? 'selected' : ''}>🌍 Geografia</option>
@@ -142,25 +142,31 @@ const GameFeed = (() => {
       const cardTitle = game.name;
       const cardDesc = game.summary;
       const ttsCardText = `Jogo: ${cardTitle}. ${cardDesc}`;
+      const chosenLevel = cardSelectedLevels[game.id] || (game.levels.includes(activeFilterLevel) ? activeFilterLevel : game.levels[0]);
 
       html += `
         <article class="game-card" id="card-${game.id}" tabindex="0" aria-label="${cardTitle}. ${cardDesc}">
-          <div class="card-badge-row">
+          <div class="card-header-area">
             <span class="symbol-badge" title="Símbolo">${game.symbol}</span>
-            <div class="levels-pills-interactive" role="group" aria-label="Selecionar nível de dificuldade para ${cardTitle}">
-              ${game.levels.map(l => `
-                <button type="button" class="level-pill-btn ${l} ${App.getCurrentLevel() === l ? 'selected' : ''}" 
-                  onclick="event.stopPropagation(); App.launchGame('${game.id}', '${l}', '${activeCategoryTheme}')" 
-                  aria-label="Jogar ${cardTitle} no nível ${l}">
-                  ${l === 'avancado' ? 'AVANÇADO (DIFÍCIL)' : l.toUpperCase()}
-                </button>
-              `).join('')}
+            <div class="card-level-selector-box">
+              <label for="select-level-${game.id}" class="sr-only">Nível de Dificuldade para ${cardTitle}</label>
+              <select id="select-level-${game.id}" class="card-level-dropdown ${chosenLevel}" onchange="GameFeed.setCardLevel('${game.id}', this.value)" aria-label="Nível de Dificuldade para ${cardTitle}">
+                ${game.levels.map(l => `
+                  <option value="${l}" ${chosenLevel === l ? 'selected' : ''}>
+                    ${l === 'iniciante' ? '🟢 INICIANTE' : (l === 'intermediario' ? '🟡 INTERMEDIÁRIO' : '🔴 AVANÇADO (DIFÍCIL)')}
+                  </option>
+                `).join('')}
+              </select>
             </div>
           </div>
-          <h3 class="game-card-title">${cardTitle}</h3>
-          <p class="game-card-summary">${cardDesc}</p>
+          
+          <div class="card-body-area">
+            <h3 class="game-card-title">${cardTitle}</h3>
+            <p class="game-card-summary">${cardDesc}</p>
+          </div>
+
           <div class="game-card-actions">
-            <button type="button" class="btn btn-play" onclick="App.launchGame('${game.id}', App.getCurrentLevel(), '${activeCategoryTheme}')" aria-label="Jogar ${cardTitle}">
+            <button type="button" class="btn btn-play" onclick="GameFeed.playGame('${game.id}')" aria-label="Jogar ${cardTitle}">
               🎮 Jogar
             </button>
             <button type="button" class="btn btn-audio-card" onclick="AudioEngine.speak('${ttsCardText}')" aria-label="Ouvir descrição do jogo ${cardTitle}">
@@ -179,7 +185,7 @@ const GameFeed = (() => {
     activeFilterLevel = filterName;
     renderFeed('game-feed-container');
     AudioEngine.playClick();
-    AudioEngine.speak(`Filtro de nível alterado para: ${filterName === 'todos' ? 'Todos os jogos' : filterName}`);
+    AudioEngine.speak(`Filtro de jogos alterado para: ${filterName === 'todos' ? 'Todos os jogos' : filterName}`);
   }
 
   function setCategoryTheme(themeName) {
@@ -193,7 +199,20 @@ const GameFeed = (() => {
       animais: 'Tema Animais',
       desenhos: 'Tema Desenhos Animados'
     };
-    AudioEngine.speak(`Tema selecionado: ${themeLabels[themeName] || themeName}`);
+    AudioEngine.speak(`Tema de palavras alterado para: ${themeLabels[themeName] || themeName}`);
+  }
+
+  function setCardLevel(gameId, level) {
+    cardSelectedLevels[gameId] = level;
+    AudioEngine.playClick();
+    AudioEngine.speak(`Nível do jogo alterado para ${level}`);
+  }
+
+  function playGame(gameId) {
+    const gameInfo = getGameById(gameId);
+    if (!gameInfo) return;
+    const selectedLevel = cardSelectedLevels[gameId] || (gameInfo.levels.includes(activeFilterLevel) ? activeFilterLevel : gameInfo.levels[0]);
+    App.launchGame(gameId, selectedLevel, activeCategoryTheme);
   }
 
   function getGameById(id) {
@@ -204,5 +223,5 @@ const GameFeed = (() => {
     return activeCategoryTheme;
   }
 
-  return { renderFeed, setFilterLevel, setCategoryTheme, getGameById, getActiveCategoryTheme, GAMES_LIST };
+  return { renderFeed, setFilterLevel, setCategoryTheme, setCardLevel, playGame, getGameById, getActiveCategoryTheme, GAMES_LIST };
 })();
