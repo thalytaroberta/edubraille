@@ -59,16 +59,11 @@ const BRAILLE_MAP = {
 
   // Indicador de Número
   '#': { dots: [3, 4, 5, 6], name: 'Sinal de Número', desc: 'pontos 3, 4, 5 e 6' },
-
-  // Espaço em branco
   ' ': { dots: [], name: 'Espaço', desc: 'sem pontos elevados' }
 };
 
-/**
- * Calcula o caractere Unicode Braille a partir de uma lista de pontos (1 a 6).
- */
 function getBrailleUnicode(dots) {
-  if (!dots || dots.length === 0) return '⠀'; // U+2800 (Braille pattern blank)
+  if (!dots || dots.length === 0) return '⠀';
   const bitWeights = { 1: 0x01, 2: 0x02, 3: 0x04, 4: 0x08, 5: 0x10, 6: 0x20 };
   let val = 0x2800;
   dots.forEach(d => {
@@ -77,9 +72,6 @@ function getBrailleUnicode(dots) {
   return String.fromCharCode(val);
 }
 
-/**
- * Traduz uma combinação de pontos (ex: [1, 2]) para o caractere em tinta correspondente.
- */
 function dotsToChar(dots) {
   if (!dots || dots.length === 0) return { char: '', name: 'Célula Vazia', unicode: '⠀' };
   const sortedDotsStr = [...dots].sort((a, b) => a - b).join(',');
@@ -94,9 +86,6 @@ function dotsToChar(dots) {
   return { char: '?', name: 'Combinação Desconhecida', unicode: getBrailleUnicode(dots) };
 }
 
-/**
- * Retorna as informações completas de um caractere.
- */
 function getCharInfo(char) {
   if (!char) return null;
   const upper = char.toUpperCase();
@@ -111,9 +100,6 @@ function getCharInfo(char) {
   };
 }
 
-/**
- * Converte um texto simples para sequência de caracteres Braille com metadados.
- */
 function textToBrailleSequence(text) {
   const result = [];
   for (let i = 0; i < text.length; i++) {
@@ -127,12 +113,9 @@ function textToBrailleSequence(text) {
   return result;
 }
 
-/**
- * Renderiza o HTML de um componente dual: Tinta + Braille + Leitura sonora.
- */
 function renderDualCellHTML(char, options = {}) {
   const info = getCharInfo(char);
-  const sizeClass = options.size || 'medium'; // small, medium, large, giant
+  const sizeClass = options.size || 'medium';
   const showAudioBtn = options.showAudioBtn !== false;
   const showDotNumbers = options.showDotNumbers !== false;
   const customId = options.id || `dual-cell-${Math.random().toString(36).substring(2, 9)}`;
@@ -187,10 +170,6 @@ function renderDualCellHTML(char, options = {}) {
   `;
 }
 
-/**
- * Renderiza uma Célula Braille Interativa Vazia (Preenchimento Ponto a Ponto)
- * Permite ao jogador clicar nos pontos 1 a 6 para formar a letra desejada!
- */
 function renderInteractiveEmptyCellHTML(cellId, currentDots = [], onToggleFunctionName = 'toggleCellDot', options = {}) {
   const activeDotsSet = new Set(currentDots);
   const resultChar = dotsToChar(currentDots);
@@ -211,7 +190,7 @@ function renderInteractiveEmptyCellHTML(cellId, currentDots = [], onToggleFuncti
         <button type="button" class="braille-dot interactive ${activeClass}" 
           data-dot="${dotNum}"
           onclick="event.stopPropagation(); ${onToggleFunctionName}('${cellId}', ${dotNum})"
-          aria-label="Ponto ${dotNum}: ${isActive ? 'Elevado. Clique para desativar' : 'Vazio. Clique para elevar'}">
+          aria-label="Ponto ${dotNum}: ${isActive ? 'Elevado' : 'Vazio'}">
           <span class="dot-inner"></span>
           <span class="dot-number">${dotNum}</span>
         </button>
@@ -238,82 +217,177 @@ function renderInteractiveEmptyCellHTML(cellId, currentDots = [], onToggleFuncti
   `;
 }
 
-// Bancos de Dados por Nível de Dificuldade
-const GAME_DATABASES = {
-  words: {
+// BANCO DE DADOS ORGANIZADO POR TEMAS E NÍVEIS (INICIANTE, INTERMEDIÁRIO, AVANÇADO)
+const THEMATIC_DATABASES = {
+  musica: {
     iniciante: [
-      { word: 'BOLA', hint: 'Brinquedo redondo usado em jogos de futebol' },
-      { word: 'CASA', hint: 'Lugar onde moramos com nossa família' },
-      { word: 'GATO', hint: 'Animal de estimação que faz miau' },
-      { word: 'PATO', hint: 'Ave aquática que faz quá-quá' },
-      { word: 'SOL', hint: 'Estrela brilhante que ilumina o dia' },
-      { word: 'LUA', hint: 'Aparece no céu à noite' },
-      { word: 'DADO', hint: 'Cubo numerado usado em jogos de mesa' },
-      { word: 'SAPO', hint: 'Anfíbio verde que pula na lagoa' },
-      { word: 'BOCA', hint: 'Parte do corpo usada para falar e comer' },
-      { word: 'FLOR', hint: 'Planta colorida e perfumada do jardim' }
+      { word: 'SOM', hint: 'Vibração sonora que ouvimos' },
+      { word: 'TOM', hint: 'Altura da nota musical' },
+      { word: 'BANDA', hint: 'Grupo de músicos que tocam juntos' },
+      { word: 'RITMO', hint: 'Batida e tempo da música' }
     ],
     intermediario: [
-      { word: 'ESCOLA', hint: 'Local onde vamos para aprender e estudar' },
-      { word: 'AMIGO', hint: 'Pessoa companheira que gostamos muito' },
-      { word: 'JARDIM', hint: 'Lugar com flores e plantas ao ar livre' },
-      { word: 'ARVORE', hint: 'Planta grande com tronco e folhas verdes' },
-      { word: 'MUSICA', hint: 'Som melodioso que gostamos de ouvir' },
-      { word: 'BRASIL', hint: 'Nosso país' },
-      { word: 'JANELA', hint: 'Abertura na parede para entrar luz e ar' },
-      { word: 'LIVRO', hint: 'Objeto com páginas cheias de histórias' },
-      { word: 'CANETA', hint: 'Objeto usado para escrever com tinta' },
-      { word: 'BONECA', hint: 'Brinquedo em forma de pessoa' }
+      { word: 'PIANO', hint: 'Instrumento musical com teclas brancas e pretas' },
+      { word: 'FLAUTA', hint: 'Instrumento de sopro melodioso' },
+      { word: 'VIOLAO', hint: 'Instrumento de cordas muito popular' },
+      { word: 'CANCAO', hint: 'Música cantada com letra' }
     ],
     avancado: [
-      { word: 'ALFABETO', hint: 'Conjunto de todas as letras da nossa língua' },
-      { word: 'PROFESSOR', hint: 'Profissional que nos ensina na escola' },
-      { word: 'ESTUDANTE', hint: 'Pessoa que se dedica a aprender novos conhecimentos' },
-      { word: 'EDUCAÇÃO', hint: 'Processo de ensino e aprendizado' },
-      { word: 'BRAILLE', hint: 'Sistema de leitura e escrita tátil em alto-relevo' },
-      { word: 'COMPUTADOR', hint: 'Máquina eletrônica usada para estudar e jogar' },
-      { word: 'RESPEITO', hint: 'Tratar todas as pessoas com consideração e carinho' },
-      { word: 'ALEGRIA', hint: 'Sentimento de felicidade e bem-estar' }
+      { word: 'MELODIA', hint: 'Sequência harmoniosa de notas musicais' },
+      { word: 'TECLADO', hint: 'Instrumento eletrônico musical' },
+      { word: 'VIOLINO', hint: 'Instrumento de cordas tocado com arco' },
+      { word: 'BATERIA', hint: 'Conjunto de percussão com pratos e tambores' },
+      { word: 'ORQUESTRA', hint: 'Grande conjunto de músicos e instrumentos' }
     ]
+  },
+  geografia: {
+    iniciante: [
+      { word: 'SOL', hint: 'Estrela brilhante do nosso sistema' },
+      { word: 'MAPA', hint: 'Desenho que representa a terra' },
+      { word: 'RUA', hint: 'Caminho onde passam carros e pessoas' },
+      { word: 'PAIS', hint: 'Nação com seu próprio território' }
+    ],
+    intermediario: [
+      { word: 'BRASIL', hint: 'Nosso país verde e amarelo' },
+      { word: 'CIDADE', hint: 'Município com muitos prédios e casas' },
+      { word: 'ESTADO', hint: 'Unidade federativa do país' },
+      { word: 'OCEANO', hint: 'Grande massa de água salgada' }
+    ],
+    avancado: [
+      { word: 'CONTINENTE', hint: 'Grande extensão de terra cercada pelos oceanos' },
+      { word: 'MONTANHA', hint: 'Grande elevação natural do terreno' },
+      { word: 'FLORESTA', hint: 'Área com muitas árvores e vegetação' },
+      { word: 'CAPITAL', hint: 'Cidade onde fica o governo do estado ou país' },
+      { word: 'PLANETA', hint: 'Corpo celeste como a Terra que orbita o Sol' }
+    ]
+  },
+  internet: {
+    iniciante: [
+      { word: 'SITE', hint: 'Página da web que navegamos' },
+      { word: 'REDE', hint: 'Conexão entre vários computadores' },
+      { word: 'LINK', hint: 'Atalho para abrir uma página na internet' },
+      { word: 'TELA', hint: 'Superfície onde vemos a imagem do computador' }
+    ],
+    intermediario: [
+      { word: 'CODIGO', hint: 'Instruções escritas para criar um programa' },
+      { word: 'MOUSE', hint: 'Dispositivo usado para clicar na tela' },
+      { word: 'PAGINA', hint: 'Documento exibido no navegador' },
+      { word: 'DADOS', hint: 'Informações digitais no computador' }
+    ],
+    avancado: [
+      { word: 'COMPUTADOR', hint: 'Máquina eletrônica usada para estudar e navegar' },
+      { word: 'NAVEGADOR', hint: 'Programa usado para acessar a internet' },
+      { word: 'CONEXAO', hint: 'Ligação com a rede de internet' },
+      { word: 'DISPOSITIVO', hint: 'Aparelho eletrônico como celular ou tablet' }
+    ]
+  },
+  animais: {
+    iniciante: [
+      { word: 'GATO', hint: 'Animal que faz miau' },
+      { word: 'PATO', hint: 'Ave que faz quá-quá' },
+      { word: 'SAPO', hint: 'Anfíbio que pula na lagoa' },
+      { word: 'LEAO', hint: 'Rei da selva' }
+    ],
+    intermediario: [
+      { word: 'CACHORRO', hint: 'Melhor amigo do homem que faz au-au' },
+      { word: 'PASSARO', hint: 'Animal com asas que voa no céu' },
+      { word: 'CAVALO', hint: 'Grande animal que relincha' },
+      { word: 'COELHO', hint: 'Animal de orelhas compridas que pula' }
+    ],
+    avancado: [
+      { word: 'ELEFANTE', hint: 'Grande mamífero com tromba comprida' },
+      { word: 'TARTARUGA', hint: 'Reptil com casco que anda devagar' },
+      { word: 'TUBARAO', hint: 'Grande predador do oceano' },
+      { word: 'GOLFINHO', hint: 'Mamífero marinho inteligente e amigável' },
+      { word: 'GIRAFAS', hint: 'Animais do cerrado com pescoço muito alto' }
+    ]
+  },
+  desenhos: {
+    iniciante: [
+      { word: 'HEROI', hint: 'Personagem corajoso dos desenhos' },
+      { word: 'REI', hint: 'Governante do castelo nas histórias' },
+      { word: 'MAGIA', hint: 'Poder misterioso dos magos' },
+      { word: 'FADA', hint: 'Ser mágico com asas pequeninas' }
+    ],
+    intermediario: [
+      { word: 'DRAGAO', hint: 'Criatura lendária que cospe fogo' },
+      { word: 'CASTELO', hint: 'Morada dos reis e princesas' },
+      { word: 'PRINCESA', hint: 'Personagem nobre dos contos de fadas' },
+      { word: 'DESENHO', hint: 'Animação divertida na televisão' }
+    ],
+    avancado: [
+      { word: 'PERSONAGEM', hint: 'Figura criada para uma história ou desenho' },
+      { word: 'AVENTURA', hint: 'Jornada cheia de emoção e desafios' },
+      { word: 'FANTASIA', hint: 'Mundo imaginário cheio de magia' },
+      { word: 'CINEMA', hint: 'Lugar onde assistimos grandes filmes' }
+    ]
+  }
+};
+
+/**
+ * Retorna banco de palavras filtrado por Tema e Nível de Dificuldade
+ */
+function getWordsByThemeAndLevel(theme = 'aleatorio', level = 'iniciante') {
+  let themeKeys = [theme];
+  if (theme === 'aleatorio' || !THEMATIC_DATABASES[theme]) {
+    themeKeys = Object.keys(THEMATIC_DATABASES);
+  }
+
+  let combined = [];
+  themeKeys.forEach(tKey => {
+    const tData = THEMATIC_DATABASES[tKey];
+    if (tData && tData[level]) {
+      combined = combined.concat(tData[level]);
+    }
+  });
+
+  if (combined.length === 0) {
+    // Fallback genérico
+    combined = THEMATIC_DATABASES.animais.iniciante;
+  }
+  return combined;
+}
+
+// Manter compatibilidade com GAME_DATABASES antigo
+const GAME_DATABASES = {
+  words: {
+    iniciante: getWordsByThemeAndLevel('aleatorio', 'iniciante'),
+    intermediario: getWordsByThemeAndLevel('aleatorio', 'intermediario'),
+    avancado: getWordsByThemeAndLevel('aleatorio', 'avancado')
   },
   syllables: {
     iniciante: [
       { word: 'BOLA', syllables: ['BO', 'LA'], hint: 'Usada no futebol' },
       { word: 'CASA', syllables: ['CA', 'SA'], hint: 'Nosso lar' },
       { word: 'GATO', syllables: ['GA', 'TO'], hint: 'Miau!' },
-      { word: 'DADO', syllables: ['DA', 'DO'], hint: 'Usado em jogos' },
-      { word: 'SAPO', syllables: ['SA', 'PO'], hint: 'Vive na lagoa' }
+      { word: 'DADO', syllables: ['DA', 'DO'], hint: 'Usado em jogos' }
     ],
     intermediario: [
       { word: 'ESCOLA', syllables: ['ES', 'CO', 'LA'], hint: 'Local de estudos' },
       { word: 'AMIGO', syllables: ['A', 'MI', 'GO'], hint: 'Companheiro querido' },
-      { word: 'JANELA', syllables: ['JA', 'NE', 'LA'], hint: 'Para olhar para fora' },
-      { word: 'BONECA', syllables: ['BO', 'NE', 'CA'], hint: 'Brinquedo infantil' }
+      { word: 'JANELA', syllables: ['JA', 'NE', 'LA'], hint: 'Para olhar para fora' }
     ],
     avancado: [
       { word: 'ALFABETO', syllables: ['AL', 'FA', 'BE', 'TO'], hint: 'Conjunto de letras' },
       { word: 'PROFESSOR', syllables: ['PRO', 'FES', 'SOR'], hint: 'Quem ensina' },
-      { word: 'ESTUDANTE', syllables: ['ES', 'TU', 'DAN', 'TE'], hint: 'Quem estuda' }
+      { word: 'COMPUTADOR', syllables: ['COM', 'PU', 'TA', 'DOR'], hint: 'Máquina digital' }
     ]
   },
   math: {
     iniciante: [
       { problem: '2 + 3', answer: '5', hint: 'Somar dois com três' },
       { problem: '4 + 1', answer: '5', hint: 'Quatro mais um' },
-      { problem: '7 - 2', answer: '5', hint: 'Sete tirar dois' },
-      { problem: '3 + 3', answer: '6', hint: 'Três mais três' },
-      { problem: '9 - 1', answer: '8', hint: 'Nove tirar um' }
+      { problem: '3 + 3', answer: '6', hint: 'Três mais três' }
     ],
     intermediario: [
       { problem: '5 + 7', answer: '12', hint: 'Cinco mais sete' },
       { problem: '15 - 5', answer: '10', hint: 'Quinze tirar cinco' },
-      { problem: '8 + 8', answer: '16', hint: 'Oito mais oito' },
-      { problem: '20 - 6', answer: '14', hint: 'Vinte tirar seis' }
+      { problem: '8 + 8', answer: '16', hint: 'Oito mais oito' }
     ],
     avancado: [
       { problem: '25 + 25', answer: '50', hint: 'Vinte e cinco mais vinte e cinco' },
       { problem: '100 - 30', answer: '70', hint: 'Cem tirar trinta' },
-      { problem: '12 + 18', answer: '30', hint: 'Doze mais dezoito' }
+      { problem: '45 + 55', answer: '100', hint: 'Quarenta e cinco mais cinquenta e cinco' }
     ]
   }
 };
