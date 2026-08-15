@@ -1,10 +1,12 @@
 /**
- * Jogo 3 — Cruzadas Diretas Braille
+ * Jogo 3 — Cruzadas Diretas Braille (Com modo de preenchimento Ponto a Ponto em Células Vazias)
  */
 const DirectCrosswordGame = (() => {
   let currentLevel = 'iniciante';
   let puzzleData = null;
-  let userGrid = {};
+  let userCellDots = {}; // Armazena os pontos elevados de cada célula { "r-c": [1, 2] }
+  let selectedCell = null; // { r, c }
+  let isPointByPointMode = true; // Padrão: Preenchimento Ponto a Ponto em células vazias
 
   const PUZZLES = {
     iniciante: {
@@ -37,23 +39,90 @@ const DirectCrosswordGame = (() => {
 
   function init(level = 'iniciante') {
     currentLevel = level;
-    userGrid = {};
+    userCellDots = {};
+    selectedCell = null;
     puzzleData = PUZZLES[level] || PUZZLES.iniciante;
 
     render();
-    AudioEngine.speak(`Cruzada Direta iniciada: ${puzzleData.title}. Escolha um espaço no tabuleiro para preencher.`);
+    AudioEngine.speak(`Cruzada Direta iniciada: ${puzzleData.title}. Clique em uma célula vazia para formar a letra ponto a ponto (pontos 1 a 6).`);
   }
 
-  function typeLetter(row, col, char) {
+  function selectCrosswordCell(r, c) {
+    selectedCell = { r, c };
+    const key = `${r}-${c}`;
+    const dots = userCellDots[key] || [];
+    const formedChar = dotsToChar(dots);
+
+    AudioEngine.playClick();
+    if (formedChar.char) {
+      AudioEngine.speak(`Linha ${r+1}, Coluna ${c+1} selecionada. Contém letra ${formedChar.name}. Selecione os pontos de 1 a 6 para alterar.`);
+    } else {
+      AudioEngine.speak(`Linha ${r+1}, Coluna ${c+1} selecionada. Célula vazia. Selecione os pontos de 1 a 6 para formar a letra.`);
+    }
+
+    render();
+  }
+
+  function toggleCellDot(cellKey, dotNum) {
+    let key = cellKey;
+    if (typeof cellKey === 'object' && cellKey !== null) {
+      key = `${cellKey.r}-${cellKey.c}`;
+    }
+
+    if (!userCellDots[key]) {
+      userCellDots[key] = [];
+    }
+
+    const currentDots = userCellDots[key];
+    const idx = currentDots.indexOf(dotNum);
+    if (idx >= 0) {
+      currentDots.splice(idx, 1);
+      AudioEngine.speak(`Ponto ${dotNum} desativado.`);
+    } else {
+      currentDots.push(dotNum);
+      AudioEngine.speak(`Ponto ${dotNum} elevado!`);
+    }
+
+    AudioEngine.playClick();
+
+    const formed = dotsToChar(currentDots);
+    if (formed.char && formed.char !== '?') {
+      AudioEngine.speak(`Letra ${formed.name} formada com sucesso!`);
+    }
+
+    render();
+    checkPuzzleCompletion();
+  }
+
+  function toggleInputMode() {
+    isPointByPointMode = !isPointByPointMode;
+    AudioEngine.playClick();
+    AudioEngine.speak(isPointByPointMode 
+      ? 'Modo Preenchimento Ponto a Ponto ativado! Construa as letras clicando nos pontos 1 a 6 de cada célula vazia.' 
+      : 'Modo Teclado ativado. Digite as letras diretamente.');
+    render();
+  }
+
+  function typeDirectLetter(r, c, char) {
     const letter = char.toUpperCase();
     if (!letter.match(/[A-Z]/)) return;
 
-    userGrid[`${row}-${col}`] = letter;
+    const info = getCharInfo(letter);
+    userCellDots[`${r}-${c}`] = [...info.dots];
+    
     AudioEngine.speakLetter(letter);
     AudioEngine.playClick();
     render();
 
     checkPuzzleCompletion();
+  }
+
+  function clearCell(r, c) {
+    const key = `${r}-${c}`;
+    userCellDots[key] = [];
+    AudioEngine.playClick();
+    AudioEngine.speak('Célula limpa.');
+    render();
   }
 
   function checkPuzzleCompletion() {
@@ -62,9 +131,10 @@ const DirectCrosswordGame = (() => {
       for (let i = 0; i < w.word.length; i++) {
         const r = w.direction === 'across' ? w.row : w.row + i;
         const c = w.direction === 'across' ? w.col + i : w.col;
-        const expected = w.word[i];
-        const val = userGrid[`${r}-${c}`];
-        if (val !== expected) {
+        const expectedLetter = w.word[i];
+        const dots = userCellDots[`${r}-${c}`] || [];
+        const formedChar = dotsToChar(dots).char;
+        if (formedChar !== expectedLetter) {
           allCorrect = false;
         }
       }
@@ -72,9 +142,9 @@ const DirectCrosswordGame = (() => {
 
     if (allCorrect) {
       AudioEngine.playWin();
-      TeacherMode.recordGameResult('Cruzadas Diretas', true, `Tema: ${puzzleData.title}`);
+      TeacherMode.recordGameResult('Cruzadas Diretas', true, `Tema: ${puzzleData.title} (Ponto a Ponto)`);
       setTimeout(() => {
-        AudioEngine.speak('Fantástico! Você completou toda a Cruzada Direta com perfeição!');
+        AudioEngine.speak('Fantástico! Você completou toda a Cruzada Direta preenchendo as células ponto a ponto com perfeição!');
       }, 500);
     }
   }
@@ -84,7 +154,6 @@ const DirectCrosswordGame = (() => {
     if (!container) return;
 
     const size = puzzleData.gridSize;
-    let gridCellsHTML = `<div class="crossword-grid grid-size-${size}" style="grid-template-columns: repeat(${size}, 1fr);" role="grid">`;
 
     // Constrói mapa de células válidas da cruzada
     const validCells = {};
@@ -98,6 +167,8 @@ const DirectCrosswordGame = (() => {
       }
     });
 
+    let gridCellsHTML = `<div class="crossword-grid grid-size-${size}" style="grid-template-columns: repeat(${size}, 1fr);" role="grid" aria-label="Grade da Cruzada">`;
+
     for (let r = 0; r < size; r++) {
       for (let c = 0; c < size; c++) {
         const key = `${r}-${c}`;
@@ -106,24 +177,25 @@ const DirectCrosswordGame = (() => {
         if (!cellData) {
           gridCellsHTML += `<div class="crossword-cell black-cell" aria-hidden="true"></div>`;
         } else {
-          const userVal = userGrid[key] || '';
-          const isFilled = !!userVal;
-          const isCorrect = userVal === cellData.expected;
-          const info = userVal ? getCharInfo(userVal) : null;
+          const dots = userCellDots[key] || [];
+          const formedObj = dotsToChar(dots);
+          const isFilled = dots.length > 0;
+          const isCorrect = formedObj.char === cellData.expected;
+          const isSelected = selectedCell && selectedCell.r === r && selectedCell.c === c;
 
           gridCellsHTML += `
-            <div class="crossword-cell active-cell ${isFilled ? (isCorrect ? 'correct' : 'incorrect') : ''}">
+            <div class="crossword-cell active-cell ${isSelected ? 'selected' : ''} ${isFilled ? (isCorrect ? 'correct' : 'incorrect') : 'empty-cell-grid'}"
+              onclick="DirectCrosswordGame.selectCrosswordCell(${r}, ${c})"
+              tabindex="0"
+              role="gridcell"
+              aria-label="Linha ${r+1}, Coluna ${c+1}.${cellData.wordNumber ? ' Início da dica ' + cellData.wordNumber : ''}. ${isFilled ? 'Letra formada: ' + formedObj.name : 'Célula vazia sem preenchimento'}">
+              
               ${cellData.wordNumber ? `<span class="cell-number">${cellData.wordNumber}</span>` : ''}
-              <input type="text" class="cell-input" maxlength="1" value="${userVal}"
-                oninput="DirectCrosswordGame.typeLetter(${r}, ${c}, this.value)"
-                onfocus="AudioEngine.speak('Espaço linha ${r+1}, coluna ${c+1}.${cellData.wordNumber ? ' Início da dica ' + cellData.wordNumber : ''}. ${userVal ? 'Contém letra ' + userVal : 'Vazio'}')"
-                aria-label="Linha ${r+1}, Coluna ${c+1}. ${userVal ? 'Letra ' + userVal : 'Vazio'}" />
-              ${userVal ? `
-                <div class="cell-dual-overlay">
-                  <span class="ink">${userVal}</span>
-                  <span class="braille">${info ? info.unicode : ''}</span>
-                </div>
-              ` : ''}
+
+              <div class="cell-braille-mini-preview">
+                <span class="cell-ink-big">${formedObj.char || '?'}</span>
+                <span class="cell-unicode-symbol">${formedObj.unicode}</span>
+              </div>
             </div>
           `;
         }
@@ -131,9 +203,48 @@ const DirectCrosswordGame = (() => {
     }
     gridCellsHTML += `</div>`;
 
+    // Painel do Construtor Ponto a Ponto para a Célula Selecionada
+    let builderPanelHTML = '';
+    if (selectedCell) {
+      const { r, c } = selectedCell;
+      const key = `${r}-${c}`;
+      const currentDots = userCellDots[key] || [];
+      const cellData = validCells[key];
+      const formedObj = dotsToChar(currentDots);
+
+      builderPanelHTML = `
+        <div class="point-builder-panel" role="region" aria-label="Painel Construtor Ponto a Ponto">
+          <h3>✍️ Construtor Ponto a Ponto (Linha ${r+1}, Coluna ${c+1})</h3>
+          <p class="builder-hint">Clique nos pontos 1 a 6 para elevar ou abaixar cada ponto e formar a letra:</p>
+          
+          <div class="builder-interactive-wrapper">
+            ${renderInteractiveEmptyCellHTML(`builder-cell-${r}-${c}`, currentDots, 'DirectCrosswordGame.toggleCellDotFromBuilder', { size: 'large' })}
+            
+            <div class="builder-feedback-side">
+              <div class="result-box">
+                <span class="result-label">Letra Formada:</span>
+                <span class="result-char">${formedObj.char || 'Nenhuma'}</span>
+                <span class="result-desc">${formedObj.name}</span>
+              </div>
+              
+              <button type="button" class="btn btn-secondary" onclick="DirectCrosswordGame.clearCell(${r}, ${c})">
+                🗑️ Limpar Célula
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    } else {
+      builderPanelHTML = `
+        <div class="point-builder-panel empty-state">
+          <p class="text-muted">👉 Clique em qualquer quadrado vazio no tabuleiro da Cruzada para abrir o <strong>Construtor Ponto a Ponto (Pontos 1-6)</strong>.</p>
+        </div>
+      `;
+    }
+
     // Dicas
     let cluesHTML = '<div class="crossword-clues-panel">';
-    cluesHTML += '<h3>Dicas:</h3><ul class="clues-list">';
+    cluesHTML += '<h3>Dicas da Cruzada:</h3><ul class="clues-list">';
     puzzleData.words.forEach(w => {
       cluesHTML += `
         <li class="clue-item" tabindex="0" onclick="AudioEngine.speak('Dica ${w.id}: ${w.clue}')">
@@ -147,7 +258,7 @@ const DirectCrosswordGame = (() => {
     container.innerHTML = `
       <div class="game-wrapper crossword-wrapper">
         <div class="game-header-bar">
-          <h2>Cruzadas Diretas Braille</h2>
+          <h2>Cruzadas Diretas Braille — Ponto a Ponto</h2>
           <div class="game-meta">
             <span class="badge level-badge">${currentLevel.toUpperCase()}</span>
             <span class="badge theme-badge">${puzzleData.title}</span>
@@ -155,7 +266,13 @@ const DirectCrosswordGame = (() => {
         </div>
 
         <div class="instructions-banner">
-          <p>Digite cada letra nos quadrados. Cada letra exibirá seu padrão em Tinta e Braille simultaneamente.</p>
+          <p><strong>Novo Modo Ponto a Ponto:</strong> As células do tabuleiro iniciam em branco. Selecione uma célula e clique nos <strong>pontos 1 a 6</strong> para formar cada letra em Braille!</p>
+        </div>
+
+        <div class="crossword-mode-bar" style="margin-bottom: 1rem;">
+          <button type="button" class="btn ${isPointByPointMode ? 'btn-primary' : 'btn-secondary'}" onclick="DirectCrosswordGame.toggleInputMode()">
+            ${isPointByPointMode ? '🟡 Modo Atual: Construtor Ponto a Ponto (Pontos 1-6)' : '⌨️ Modo Atual: Teclado Direto'}
+          </button>
         </div>
 
         <div class="crossword-layout">
@@ -163,13 +280,21 @@ const DirectCrosswordGame = (() => {
           ${cluesHTML}
         </div>
 
+        ${builderPanelHTML}
+
         <div class="game-actions-bar">
           <button type="button" class="btn btn-primary" onclick="DirectCrosswordGame.init('${currentLevel}')">🔄 Reiniciar Cruzada</button>
-          <button type="button" class="btn btn-secondary" onclick="AudioEngine.speak('Dicas da cruzada: ' + puzzleData.words.map(w => 'Número ' + w.id + ': ' + w.clue).join('. '))">🔊 Ouvir Todas as Dicas</button>
+          <button type="button" class="btn btn-secondary" onclick="AudioEngine.speak('Dicas da cruzada: ' + puzzleData.words.map(w => 'Número ' + w.id + ': ' + w.clue).join('. '))">🔊 Ouvir Dicas</button>
         </div>
       </div>
     `;
   }
 
-  return { init, typeLetter, render };
+  function toggleCellDotFromBuilder(elementId, dotNum) {
+    if (selectedCell) {
+      toggleCellDot(selectedCell, dotNum);
+    }
+  }
+
+  return { init, selectCrosswordCell, toggleCellDot, toggleCellDotFromBuilder, toggleInputMode, clearCell, render };
 })();

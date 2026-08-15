@@ -61,7 +61,7 @@ const BRAILLE_MAP = {
   '#': { dots: [3, 4, 5, 6], name: 'Sinal de Número', desc: 'pontos 3, 4, 5 e 6' },
 
   // Espaço em branco
-  ' ': { dots: [], name: 'Espaço', desc: 'sem pontos levados' }
+  ' ': { dots: [], name: 'Espaço', desc: 'sem pontos elevados' }
 };
 
 /**
@@ -75,6 +75,23 @@ function getBrailleUnicode(dots) {
     if (bitWeights[d]) val += bitWeights[d];
   });
   return String.fromCharCode(val);
+}
+
+/**
+ * Traduz uma combinação de pontos (ex: [1, 2]) para o caractere em tinta correspondente.
+ */
+function dotsToChar(dots) {
+  if (!dots || dots.length === 0) return { char: '', name: 'Célula Vazia', unicode: '⠀' };
+  const sortedDotsStr = [...dots].sort((a, b) => a - b).join(',');
+  for (const key in BRAILLE_MAP) {
+    if (key === '#') continue;
+    const item = BRAILLE_MAP[key];
+    const itemDotsStr = [...item.dots].sort((a, b) => a - b).join(',');
+    if (sortedDotsStr === itemDotsStr && !item.isNumber) {
+      return { char: key, name: item.name || key, unicode: getBrailleUnicode(item.dots) };
+    }
+  }
+  return { char: '?', name: 'Combinação Desconhecida', unicode: getBrailleUnicode(dots) };
 }
 
 /**
@@ -103,7 +120,6 @@ function textToBrailleSequence(text) {
     const ch = text[i];
     const info = getCharInfo(ch);
     if (info.isNumber) {
-      // Adiciona o indicador de número antes do dígito
       result.push(getCharInfo('#'));
     }
     result.push(info);
@@ -113,8 +129,6 @@ function textToBrailleSequence(text) {
 
 /**
  * Renderiza o HTML de um componente dual: Tinta + Braille + Leitura sonora.
- * @param {string} char Letra ou número a ser exibido
- * @param {object} options Opções de tamanho e botões
  */
 function renderDualCellHTML(char, options = {}) {
   const info = getCharInfo(char);
@@ -124,8 +138,6 @@ function renderDualCellHTML(char, options = {}) {
   const customId = options.id || `dual-cell-${Math.random().toString(36).substring(2, 9)}`;
 
   const activeDots = new Set(info.dots);
-
-  // Renderiza os 6 pontos do Braille em grid (2 colunas, 3 linhas: [1,4], [2,5], [3,6])
   const gridMatrix = [
     [1, 4],
     [2, 5],
@@ -170,6 +182,57 @@ function renderDualCellHTML(char, options = {}) {
             🔊 Ouvir
           </button>
         ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Renderiza uma Célula Braille Interativa Vazia (Preenchimento Ponto a Ponto)
+ * Permite ao jogador clicar nos pontos 1 a 6 para formar a letra desejada!
+ */
+function renderInteractiveEmptyCellHTML(cellId, currentDots = [], onToggleFunctionName = 'toggleCellDot', options = {}) {
+  const activeDotsSet = new Set(currentDots);
+  const resultChar = dotsToChar(currentDots);
+  const sizeClass = options.size || 'medium';
+  const gridMatrix = [
+    [1, 4],
+    [2, 5],
+    [3, 6]
+  ];
+
+  let dotsHTML = '<div class="braille-dots-grid interactive-builder">';
+  gridMatrix.forEach(row => {
+    dotsHTML += '<div class="dots-row">';
+    row.forEach(dotNum => {
+      const isActive = activeDotsSet.has(dotNum);
+      const activeClass = isActive ? 'active' : 'inactive';
+      dotsHTML += `
+        <button type="button" class="braille-dot interactive ${activeClass}" 
+          data-dot="${dotNum}"
+          onclick="event.stopPropagation(); ${onToggleFunctionName}('${cellId}', ${dotNum})"
+          aria-label="Ponto ${dotNum}: ${isActive ? 'Elevado. Clique para desativar' : 'Vazio. Clique para elevar'}">
+          <span class="dot-inner"></span>
+          <span class="dot-number">${dotNum}</span>
+        </button>
+      `;
+    });
+    dotsHTML += '</div>';
+  });
+  dotsHTML += '</div>';
+
+  return `
+    <div class="dual-cell-card interactive-builder-card ${sizeClass} ${resultChar.char ? 'has-letter' : 'empty-cell'}" id="${cellId}" tabindex="0" role="region" aria-label="Célula ponto a ponto. Letra formada: ${resultChar.name}">
+      <div class="dual-cell-header">
+        <span class="ink-char-display">${resultChar.char || '?'}</span>
+        <span class="braille-unicode-display">${resultChar.unicode}</span>
+      </div>
+      <div class="dual-cell-body">
+        ${dotsHTML}
+      </div>
+      <div class="dual-cell-footer">
+        <span class="dots-text-label">${resultChar.name}</span>
+        <span class="builder-instruction-tag">Clique nos pontos 1-6</span>
       </div>
     </div>
   `;

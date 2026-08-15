@@ -1002,6 +1002,120 @@ body {
   justify-content: center;
   padding: 1rem;
 }
+
+/* --- Construtor e Inspetor Ponto a Ponto (Pontos 1 a 6) --- */
+.point-builder-panel {
+  background: var(--bg-main);
+  border: 2px dashed var(--primary);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-top: 2rem;
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+}
+.point-builder-panel.empty-state {
+  border-style: dotted;
+  text-align: center;
+  padding: 1.25rem;
+}
+.point-builder-panel h3 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+.builder-hint {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 1.25rem;
+}
+
+.builder-interactive-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.braille-dot.interactive {
+  cursor: pointer;
+  transform: scale(1.15);
+  margin: 3px;
+}
+.braille-dot.interactive:hover {
+  transform: scale(1.3);
+  box-shadow: 0 0 12px var(--primary);
+}
+.braille-dot.interactive.active {
+  background-color: var(--braille-dot-active);
+  box-shadow: 0 0 15px var(--braille-dot-active-shadow);
+  border-color: #ffffff;
+}
+
+.builder-feedback-side {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg-card);
+  padding: 1.25rem 2rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  min-width: 200px;
+}
+
+.result-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.result-label {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+.result-char {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1.1;
+}
+.result-desc {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent-amber);
+}
+
+.empty-cell-grid {
+  border-style: dashed !important;
+  background: var(--bg-main) !important;
+  opacity: 0.85;
+}
+.crossword-cell.selected {
+  border: 3px solid var(--primary) !important;
+  box-shadow: 0 0 15px var(--primary-light) !important;
+}
+
+.cell-braille-mini-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.cell-ink-big {
+  font-size: 1.8rem;
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1;
+}
+.cell-unicode-symbol {
+  font-size: 1.2rem;
+  color: var(--text-muted);
+}
+
 .modal.show { display: flex; }
 .modal-content {
   background: var(--bg-card);
