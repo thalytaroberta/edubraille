@@ -1,10 +1,26 @@
 /**
  * EduBraille Feed de Jogos
- * Exibe a lista de cards dos 10 jogos pedagógicos com suporte a filtro por nível e TTS.
+ * Exibe a lista de cards dos 12 jogos pedagógicos com suporte a filtro por nível e TTS.
  */
 
 const GameFeed = (() => {
   const GAMES_LIST = [
+    {
+      id: 'hangman-builder',
+      name: 'Forca Célula em Branco',
+      symbol: '⚪',
+      summary: 'Adivinhe a palavra preenchendo os 6 círculos vazios da célula em branco ponto a ponto.',
+      levels: ['iniciante', 'intermediario', 'avancado'],
+      module: HangmanBuilderGame
+    },
+    {
+      id: 'wordsearch-builder',
+      name: 'Caça-Palavras Célula em Branco',
+      symbol: '⚪',
+      summary: 'Preencha os círculos das células em branco da grade para formar as palavras.',
+      levels: ['iniciante', 'intermediario', 'avancado'],
+      module: WordSearchBuilderGame
+    },
     {
       id: 'hangman',
       name: 'Jogo da Forca',
@@ -25,7 +41,7 @@ const GameFeed = (() => {
       id: 'crosswords',
       name: 'Cruzadas Diretas',
       symbol: '⠯',
-      summary: 'Preencha o tabuleiro a partir de dicas sonoras e letras Braille.',
+      summary: 'Preencha o tabuleiro a partir de dicas sonoras e letras Braille ponto a ponto.',
       levels: ['iniciante', 'intermediario', 'avancado'],
       module: DirectCrosswordGame
     },
@@ -98,7 +114,7 @@ const GameFeed = (() => {
     let html = `
       <div class="feed-filter-bar" role="toolbar" aria-label="Filtros por nível de dificuldade">
         <span class="filter-label">Nível de Dificuldade:</span>
-        <button type="button" class="btn-filter ${activeFilter === 'todos' ? 'active' : ''}" onclick="GameFeed.setFilter('todos')">Todos os Jogos</button>
+        <button type="button" class="btn-filter ${activeFilter === 'todos' ? 'active' : ''}" onclick="GameFeed.setFilter('todos')">Todos os Jogos (12)</button>
         <button type="button" class="btn-filter ${activeFilter === 'iniciante' ? 'active' : ''}" onclick="GameFeed.setFilter('iniciante')">Iniciante</button>
         <button type="button" class="btn-filter ${activeFilter === 'intermediario' ? 'active' : ''}" onclick="GameFeed.setFilter('intermediario')">Intermediário</button>
         <button type="button" class="btn-filter ${activeFilter === 'avancado' ? 'active' : ''}" onclick="GameFeed.setFilter('avancado')">Avançado</button>
@@ -115,7 +131,7 @@ const GameFeed = (() => {
       html += `
         <article class="game-card" id="card-${game.id}" tabindex="0" aria-label="${cardTitle}. ${cardDesc}">
           <div class="card-badge-row">
-            <span class="symbol-badge" title="Símbolo Braille">${game.symbol}</span>
+            <span class="symbol-badge" title="Símbolo">${game.symbol}</span>
             <div class="levels-pills">
               ${game.levels.map(l => `<span class="level-pill ${l}">${l}</span>`).join('')}
             </div>

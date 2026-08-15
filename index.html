@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EduBraille Games — Plataforma Educativa de Jogos em Braille</title>
-  <meta name="description" content="Site educativo e acessível com 10 jogos pedagógicos em Tinta e Braille para alunos alfabetizandos e professores de AEE / Educação Especial.">
+  <meta name="description" content="Site educativo e acessível com 12 jogos pedagógicos em Tinta e Braille para alunos alfabetizandos e professores de AEE / Educação Especial.">
   
   <!-- Fontes do Google -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -138,10 +138,15 @@
     </div>
   </div>
 
-  <!-- Rodapé -->
+  <!-- Rodapé com nota de rodapé pedagógica -->
   <footer class="site-footer" role="contentinfo">
     <p>EduBraille Games — Plataforma Educativa para Atendimento Educacional Especializado (AEE).</p>
-    <small>Desenvolvido com foco total em Acessibilidade, WCAG 2.1 AA e compatibilidade com Linha Braille.</small>
+    <div class="course-footnote" style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.85rem; font-size: 0.95rem; font-weight: 700; color: var(--primary);">
+      <p>Material desenvolvido no código sem fronteiras:</p>
+      <p>Desenvolvimento web com IA.</p>
+      <p>Instrutor: Eliakim Rocha</p>
+      <p>Data: 15/08/2026</p>
+    </div>
   </footer>
 
   <!-- Scripts Javascript Modularizados -->
@@ -149,7 +154,11 @@
   <script src="js/audio-tts.js"></script>
   <script src="js/teacher-mode.js"></script>
 
-  <!-- Jogos -->
+  <!-- Jogos Ponto a Ponto com Célula em Branco -->
+  <script src="js/games/hangman-builder.js"></script>
+  <script src="js/games/wordsearch-builder.js"></script>
+
+  <!-- Demais Jogos -->
   <script src="js/games/hangman.js"></script>
   <script src="js/games/wordsearch.js"></script>
   <script src="js/games/crosswords.js"></script>

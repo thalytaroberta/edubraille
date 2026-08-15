@@ -1116,6 +1116,172 @@ body {
   color: var(--text-muted);
 }
 
+/* --- Matriz de Células Braille em Branco (6 Círculos Vazios) --- */
+.blank-hangman-slots {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 2rem 0;
+}
+
+.blank-braille-slot {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 110px;
+  min-height: 160px;
+  box-shadow: var(--shadow-sm);
+}
+
+.blank-circle-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #ffffff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #333333;
+}
+
+.circle-row {
+  display: flex;
+  gap: 10px;
+}
+
+.blank-circle {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #333333;
+  background-color: transparent;
+}
+
+/* Célula Interativa de Entrada com Círculos Clicáveis */
+.blank-input-cell-box {
+  background: var(--bg-card);
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin: 1.5rem auto;
+  max-width: 550px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: var(--shadow-md);
+}
+
+.blank-matrix-builder {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--bg-main);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  margin: 1rem 0;
+}
+
+.matrix-row {
+  display: flex;
+  gap: 18px;
+}
+
+.blank-dot-circle {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 3px solid var(--border-color);
+  background: var(--bg-card);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s ease;
+}
+.blank-dot-circle:hover {
+  border-color: var(--primary);
+  transform: scale(1.1);
+}
+.blank-dot-circle.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 0 12px var(--braille-dot-active-shadow);
+}
+.blank-dot-circle .circle-num {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+.blank-dot-circle.active .circle-num {
+  color: #ffffff;
+}
+
+.builder-status-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 0.5rem;
+}
+.status-char {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: var(--primary);
+  line-height: 1;
+}
+
+.blank-wordsearch-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--bg-main);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+.blank-grid-cell {
+  width: 65px;
+  height: 75px;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+}
+.blank-grid-cell.active-cell {
+  border-color: var(--primary);
+  box-shadow: 0 0 10px var(--primary-light);
+}
+
+.cell-blank-circles {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.mini-circle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px solid var(--border-color);
+  background: transparent;
+}
+.mini-circle.filled {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+
 .modal.show { display: flex; }
 .modal-content {
   background: var(--bg-card);
