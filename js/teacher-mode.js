@@ -1,7 +1,7 @@
 /**
- * EduBraille Teacher Mode & Dashboard ("Modo Professor / AEE")
- * Gerencia o modo de instrução simultânea (tinta + braille), relatórios de progresso
- * e tabela de referência acessível.
+ * EduBraille Teacher Mode & Dashboard
+ * Modo Professor: exibe a palavra-resposta, padrões Braille de cada letra,
+ * progresso do aluno e dicas pedagógicas ao lado dos jogos.
  */
 
 const TeacherMode = (() => {
@@ -32,24 +32,25 @@ const TeacherMode = (() => {
 
     const btn = document.getElementById('btn-toggle-teacher-mode');
     const badge = document.getElementById('teacher-mode-badge');
-    
+
     if (btn) {
       btn.setAttribute('aria-pressed', isTeacherMode);
       btn.classList.toggle('active', isTeacherMode);
+      btn.textContent = isTeacherMode ? '🎓 Modo Professor ON' : '🎓 Modo Professor';
     }
-    
+
     if (badge) {
       badge.style.display = isTeacherMode ? 'inline-flex' : 'none';
     }
 
-    const msg = isTeacherMode 
-      ? 'Modo Professor ativado! As letras em tinta e braille agora são exibidas lado a lado com assistência didática.' 
+    const msg = isTeacherMode
+      ? 'Modo Professor ativado! A resposta secreta e os padrões Braille de cada letra agora são exibidos ao lado do jogo.'
       : 'Modo Professor desativado.';
 
     AudioEngine.speak(msg);
     AudioEngine.playClick();
 
-    // Notifica os jogos ativos para renderizar assistências didáticas
+    // Atualiza o jogo ativo para mostrar/ocultar o painel professor
     if (window.App && window.App.refreshCurrentGame) {
       window.App.refreshCurrentGame();
     }
@@ -61,57 +62,136 @@ const TeacherMode = (() => {
     return isTeacherMode;
   }
 
+  // ---------------------------------------------------------------
+  // PAINEL PROFESSOR LATERAL — gerado dentro dos jogos
+  // ---------------------------------------------------------------
+  /**
+   * Gera o HTML do painel lateral do professor para um jogo de palavras.
+   * @param {string} secretWord - Palavra secreta do jogo
+   * @param {string} hint       - Dica da palavra
+   * @param {Set}    guessed    - Letras já tentadas/reveladas
+   * @param {number} errors     - Erros cometidos
+   * @param {number} maxErrors  - Máximo de erros permitido
+   */
+  function buildTeacherPanel(secretWord, hint, guessed = new Set(), errors = 0, maxErrors = 6) {
+    if (!isTeacherMode) return '';
+
+    const progress = secretWord.split('').filter(ch => guessed.has(ch)).length;
+    const total = secretWord.length;
+    const pct = Math.round((progress / total) * 100);
+
+    // Tabela letra por letra com o padrão Braille
+    let letterTableHTML = '';
+    secretWord.split('').forEach((ch, i) => {
+      const info = getCharInfo(ch);
+      const isFound = guessed.has(ch);
+      letterTableHTML += `
+        <div class="teacher-letter-row ${isFound ? 'found' : ''}">
+          <span class="tl-pos">${i + 1}</span>
+          <span class="tl-ink">${ch}</span>
+          <span class="tl-braille" title="${info.desc}">${info.unicode}</span>
+          <span class="tl-dots">${info.desc}</span>
+          <span class="tl-status">${isFound ? '✅' : '⬜'}</span>
+        </div>
+      `;
+    });
+
+    return `
+      <aside class="teacher-side-panel" role="complementary" aria-label="Painel do Professor">
+        <div class="tsp-header">
+          <span class="tsp-icon">🎓</span>
+          <strong>Modo Professor</strong>
+        </div>
+
+        <!-- Resposta Secreta -->
+        <div class="tsp-block tsp-secret">
+          <span class="tsp-block-title">🔑 Palavra Secreta</span>
+          <div class="tsp-secret-word">${secretWord}</div>
+          <button type="button" class="tsp-speak-btn" onclick="AudioEngine.speak('A palavra secreta é: ${secretWord}')">🔊 Soletrar</button>
+        </div>
+
+        <!-- Dica -->
+        <div class="tsp-block tsp-hint">
+          <span class="tsp-block-title">💡 Dica do Jogo</span>
+          <p class="tsp-hint-text">${hint}</p>
+        </div>
+
+        <!-- Progresso do Aluno -->
+        <div class="tsp-block tsp-progress-block">
+          <span class="tsp-block-title">📊 Progresso do Aluno</span>
+          <div class="tsp-progress-bar-wrap">
+            <div class="tsp-progress-bar" style="width: ${pct}%"></div>
+          </div>
+          <small>${progress} de ${total} letras descobertas (${pct}%)</small>
+          ${errors > 0 ? `<div class="tsp-errors">❌ Erros: <strong>${errors}</strong> de ${maxErrors}</div>` : ''}
+        </div>
+
+        <!-- Tabela Braille -->
+        <div class="tsp-block tsp-braille-table">
+          <span class="tsp-block-title">📖 Padrão Braille de Cada Letra</span>
+          <div class="tsp-letter-table">
+            <div class="teacher-letter-row tl-head">
+              <span class="tl-pos">#</span>
+              <span class="tl-ink">Letra</span>
+              <span class="tl-braille">⠿</span>
+              <span class="tl-dots">Pontos</span>
+              <span class="tl-status">OK</span>
+            </div>
+            ${letterTableHTML}
+          </div>
+        </div>
+
+        <!-- Estatísticas da Sessão -->
+        <div class="tsp-block tsp-session-stats">
+          <span class="tsp-block-title">🏆 Sessão</span>
+          <div class="tsp-stat-row"><span>Jogos</span><strong>${studentStats.gamesPlayed}</strong></div>
+          <div class="tsp-stat-row"><span>Vitórias</span><strong>${studentStats.wins}</strong></div>
+          <div class="tsp-stat-row"><span>Acerto</span><strong>${studentStats.gamesPlayed > 0 ? Math.round((studentStats.wins / studentStats.gamesPlayed) * 100) : 0}%</strong></div>
+        </div>
+      </aside>
+    `;
+  }
+
+  // ---------------------------------------------------------------
   // Registra progresso do aluno
+  // ---------------------------------------------------------------
   function recordGameResult(gameName, won, details = '') {
     studentStats.gamesPlayed++;
     if (won) studentStats.wins++;
     studentStats.history.unshift({
       game: gameName,
-      won: won,
-      details: details,
+      won,
+      details,
       timestamp: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     });
-    // Limita o histórico a 20 registros
-    if (studentStats.history.length > 20) {
-      studentStats.history.pop();
-    }
+    if (studentStats.history.length > 20) studentStats.history.pop();
     saveStats();
     renderStatsDashboard();
   }
 
   function saveStats() {
-    try {
-      localStorage.setItem('edubraille_stats', JSON.stringify(studentStats));
-    } catch (e) {}
+    try { localStorage.setItem('edubraille_stats', JSON.stringify(studentStats)); } catch (e) {}
   }
 
   function loadStats() {
     try {
       const saved = localStorage.getItem('edubraille_stats');
-      if (saved) {
-        studentStats = JSON.parse(saved);
-      }
+      if (saved) studentStats = JSON.parse(saved);
     } catch (e) {}
   }
 
   function loadCustomWords() {
     try {
       const saved = localStorage.getItem('edubraille_custom_words');
-      if (saved) {
-        customWordBank = JSON.parse(saved);
-      }
+      if (saved) customWordBank = JSON.parse(saved);
     } catch (e) {}
   }
 
   function addCustomWord(word, hint, level = 'iniciante') {
     const cleanWord = word.trim().toUpperCase();
     if (!cleanWord) return false;
-    
     customWordBank.push({ word: cleanWord, hint: hint || 'Palavra personalizada do professor', level });
-    try {
-      localStorage.setItem('edubraille_custom_words', JSON.stringify(customWordBank));
-    } catch (e) {}
-
+    try { localStorage.setItem('edubraille_custom_words', JSON.stringify(customWordBank)); } catch (e) {}
     AudioEngine.speak(`Palavra ${cleanWord} adicionada ao banco do professor!`);
     return true;
   }
@@ -120,9 +200,8 @@ const TeacherMode = (() => {
     const container = document.getElementById('teacher-stats-container');
     if (!container) return;
 
-    const winRate = studentStats.gamesPlayed > 0 
-      ? Math.round((studentStats.wins / studentStats.gamesPlayed) * 100) 
-      : 0;
+    const winRate = studentStats.gamesPlayed > 0
+      ? Math.round((studentStats.wins / studentStats.gamesPlayed) * 100) : 0;
 
     let historyHTML = '';
     if (studentStats.history.length === 0) {
@@ -166,7 +245,6 @@ const TeacherMode = (() => {
     `;
   }
 
-  // Renderiza a Tabela Completa de Referência Braille
   function renderReferenceChart(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -196,11 +274,7 @@ const TeacherMode = (() => {
     const items = document.querySelectorAll('#reference-grid-items .dual-cell-card');
     items.forEach(card => {
       const char = card.getAttribute('data-char');
-      if (!q || char.includes(q)) {
-        card.style.display = 'flex';
-      } else {
-        card.style.display = 'none';
-      }
+      card.style.display = (!q || char.includes(q)) ? 'flex' : 'none';
     });
   }
 
@@ -208,6 +282,7 @@ const TeacherMode = (() => {
     init,
     toggleTeacherMode,
     isActive,
+    buildTeacherPanel,
     recordGameResult,
     addCustomWord,
     renderStatsDashboard,

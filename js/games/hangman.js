@@ -98,7 +98,6 @@ const HangmanGame = (() => {
     });
     wordSlotsHTML += '</div>';
 
-    // Teclado virtual acessível (A-Z)
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
     let keyboardHTML = '<div class="virtual-keyboard" role="group" aria-label="Teclado de letras">';
     alphabet.forEach(ch => {
@@ -106,10 +105,9 @@ const HangmanGame = (() => {
       const isCorrect = isUsed && secretWord.includes(ch);
       const isWrong = isUsed && !secretWord.includes(ch);
       const statusClass = isCorrect ? 'correct' : (isWrong ? 'wrong' : '');
-
       keyboardHTML += `
-        <button type="button" class="key-btn ${statusClass}" 
-          ${isUsed || isGameOver() ? 'disabled' : ''} 
+        <button type="button" class="key-btn ${statusClass}"
+          ${isUsed || isGameOver() ? 'disabled' : ''}
           onclick="HangmanGame.guessLetter('${ch}')"
           aria-label="Letra ${ch}${isUsed ? (isCorrect ? ' já usada, correta' : ' já usada, incorreta') : ''}">
           <span class="key-ink">${ch}</span>
@@ -119,7 +117,7 @@ const HangmanGame = (() => {
     });
     keyboardHTML += '</div>';
 
-    const isTeacher = TeacherMode.isActive();
+    const teacherPanel = TeacherMode.buildTeacherPanel(secretWord, wordHint, guessedLetters, errors, maxErrors);
 
     container.innerHTML = `
       <div class="game-wrapper hangman-wrapper">
@@ -131,25 +129,23 @@ const HangmanGame = (() => {
           </div>
         </div>
 
-        <div class="hint-card-box">
-          <span class="hint-icon">💡</span>
-          <p class="hint-text"><strong>Dica:</strong> ${wordHint}</p>
-          <button type="button" class="btn-sound-mini" onclick="AudioEngine.speak('Dica da palavra: ${wordHint}')">🔊 Ouvir Dica</button>
-        </div>
+        <div class="${teacherPanel ? 'game-layout-grid' : ''}">
+          <div class="game-main-col">
+            <div class="hint-card-box">
+              <span class="hint-icon">💡</span>
+              <p class="hint-text"><strong>Dica:</strong> ${wordHint}</p>
+              <button type="button" class="btn-sound-mini" onclick="AudioEngine.speak('Dica da palavra: ${wordHint}')">🔊 Ouvir Dica</button>
+            </div>
 
-        ${isTeacher ? `
-          <div class="teacher-solution-box">
-            <span>🎓 <strong>Modo Professor:</strong> Palavra Secreta = <strong>${secretWord}</strong></span>
+            ${wordSlotsHTML}
+            ${keyboardHTML}
+
+            <div class="game-actions-bar">
+              <button type="button" class="btn btn-primary" onclick="HangmanGame.init('${currentLevel}')">🔄 Jogar Novamente</button>
+              <button type="button" class="btn btn-secondary" onclick="AudioEngine.speak('Jogo da Forca. Palavra de ${secretWord.length} letras. Erros: ${errors} de ${maxErrors}. Dica: ${wordHint}')">🔊 Ouvir Situação</button>
+            </div>
           </div>
-        ` : ''}
-
-        ${wordSlotsHTML}
-
-        ${keyboardHTML}
-
-        <div class="game-actions-bar">
-          <button type="button" class="btn btn-primary" onclick="HangmanGame.init('${currentLevel}')">🔄 Jogar Novamente</button>
-          <button type="button" class="btn btn-secondary" onclick="AudioEngine.speak('Jogo da Forca. Palavra de ${secretWord.length} letras. Erros cometidos: ${errors} de ${maxErrors}. Dica: ${wordHint}')">🔊 Ouvir Situação</button>
+          ${teacherPanel}
         </div>
       </div>
     `;
@@ -157,3 +153,4 @@ const HangmanGame = (() => {
 
   return { init, guessLetter, render };
 })();
+

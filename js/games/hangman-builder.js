@@ -182,6 +182,8 @@ const HangmanBuilderGame = (() => {
     });
     guessedHTML += '</div>';
 
+    const teacherPanel = TeacherMode.buildTeacherPanel(secretWord, wordHint, guessedLetters, errors, maxErrors);
+
     container.innerHTML = `
       <div class="game-wrapper hangman-builder-wrapper">
         <div class="game-header-bar">
@@ -192,27 +194,31 @@ const HangmanBuilderGame = (() => {
           </div>
         </div>
 
-        <div class="hint-card-box">
-          <span class="hint-icon">💡</span>
-          <p class="hint-text"><strong>Dica:</strong> ${wordHint}</p>
-          <button type="button" class="btn-sound-mini" onclick="AudioEngine.speak('Dica: ${wordHint}')">🔊 Ouvir Dica</button>
-        </div>
+        <div class="${teacherPanel ? 'game-layout-grid' : ''}">
+          <div class="game-main-col">
+            <div class="hint-card-box">
+              <span class="hint-icon">💡</span>
+              <p class="hint-text"><strong>Dica:</strong> ${wordHint}</p>
+              <button type="button" class="btn-sound-mini" onclick="AudioEngine.speak('Dica: ${wordHint}')">🔊 Ouvir Dica</button>
+            </div>
 
-        <div class="game-instructions-box">
-          <p>Monte cada letra clicando nos <strong>círculos vazios da Célula em Branco</strong> (pontos 1 a 6). Depois clique em <strong>"Tentar Letra"</strong>.</p>
-        </div>
+            <div class="game-instructions-box">
+              <p>Monte cada letra clicando nos <strong>círculos vazios da Célula em Branco</strong> (pontos 1 a 6). Depois clique em <strong>"Tentar Letra"</strong>.</p>
+            </div>
 
-        ${slotsHTML}
+            ${slotsHTML}
+            ${builderCellHTML}
 
-        ${builderCellHTML}
+            <div class="used-letters-section">
+              <h4>Letras Tentadas:</h4>
+              ${guessedHTML || '<p class="text-muted">Nenhuma letra tentada ainda.</p>'}
+            </div>
 
-        <div class="used-letters-section">
-          <h4>Letras Tentadas:</h4>
-          ${guessedHTML || '<p class="text-muted">Nenhuma letra tentada ainda.</p>'}
-        </div>
-
-        <div class="game-actions-bar">
-          <button type="button" class="btn btn-primary" onclick="HangmanBuilderGame.init('${currentLevel}')">🔄 Jogar Novamente</button>
+            <div class="game-actions-bar">
+              <button type="button" class="btn btn-primary" onclick="HangmanBuilderGame.init('${currentLevel}')">🔄 Jogar Novamente</button>
+            </div>
+          </div>
+          ${teacherPanel}
         </div>
       </div>
     `;
@@ -220,3 +226,4 @@ const HangmanBuilderGame = (() => {
 
   return { init, toggleDot, submitCurrentLetter, clearBlankCell, render };
 })();
+
