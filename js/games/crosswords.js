@@ -143,6 +143,10 @@ const DirectCrosswordGame = (() => {
     if (allCorrect) {
       AudioEngine.playWin();
       TeacherMode.recordGameResult('Cruzadas Diretas', true, `Tema: ${puzzleData.title} (Ponto a Ponto)`);
+      if (window.Championship) {
+        const totalCells = puzzleData.words.reduce((acc, w) => acc + w.word.length, 0);
+        window.Championship.recordMatchResult('Cruzadas Diretas', true, totalCells, totalCells);
+      }
       setTimeout(() => {
         AudioEngine.speak('Fantástico! Você completou toda a Cruzada Direta preenchendo as células ponto a ponto com perfeição!');
       }, 500);
@@ -298,3 +302,6 @@ const DirectCrosswordGame = (() => {
 
   return { init, selectCrosswordCell, toggleCellDot, toggleCellDotFromBuilder, toggleInputMode, clearCell, render };
 })();
+
+window.DirectCrosswordGame = DirectCrosswordGame;
+

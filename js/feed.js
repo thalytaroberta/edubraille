@@ -352,3 +352,6 @@ const GameFeed = (() => {
     GAMES_LIST
   };
 })();
+
+window.GameFeed = GameFeed;
+

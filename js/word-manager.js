@@ -137,14 +137,47 @@ const WordManager = (() => {
     saveUsedWords();
   }
 
+  // Nível de tema específico do campeonato (separado do nível geral de jogo)
+  let _champThemeLevel = null;
+
+  /**
+   * Permite que o App sete o nível do banco temático para o campeonato.
+   * Ex: para aluno no nível 'insano', o banco de temas deve usar 'insano'.
+   */
+  function setChampionshipThemeLevel(level) {
+    _champThemeLevel = level || null;
+  }
+
+  function getChampionshipThemeLevel() {
+    return _champThemeLevel;
+  }
+
+  /**
+   * Versão sobrecarregada de getRandomWord que respeita o nível de tema do campeonato.
+   * Se _champThemeLevel estiver setado, usa ele para buscar no banco; o nível de jogo
+   * (iniciante/intermediario/avancado) é passado separadamente para a dificuldade do jogo.
+   */
+  const _originalGetRandomWord = getRandomWord;
+
+  function getRandomWordForChampionship(theme = 'aleatorio') {
+    const champLevel = _champThemeLevel || 'iniciante';
+    return getRandomWord(theme, champLevel);
+  }
+
   return {
     init,
     getRandomWord,
+    getRandomWordForChampionship,
+    setChampionshipThemeLevel,
+    getChampionshipThemeLevel,
     normalizeLevel,
     resetHistory
   };
 })();
 
+window.WordManager = WordManager;
+
 document.addEventListener('DOMContentLoaded', () => {
   WordManager.init();
 });
+

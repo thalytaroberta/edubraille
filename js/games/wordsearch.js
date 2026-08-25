@@ -139,6 +139,9 @@ const WordSearchGame = (() => {
     if (foundWords.size === targetWords.length) {
       AudioEngine.playWin();
       TeacherMode.recordGameResult('Caça-Palavras Braille', true, `${foundWords.size} palavras encontradas`);
+      if (window.Championship) {
+        window.Championship.recordMatchResult('Caça-Palavras Braille', true, foundWords.size, targetWords.length);
+      }
       setTimeout(() => {
         AudioEngine.speak('Parabéns! Você encontrou todas as palavras no Caça-Palavras Braille!');
       }, 500);
@@ -251,3 +254,6 @@ const WordSearchGame = (() => {
 
   return { init, clickCell, toggleInspectorDot, render };
 })();
+
+window.WordSearchGame = WordSearchGame;
+

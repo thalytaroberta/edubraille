@@ -49,6 +49,9 @@ const AssembleSyllablesGame = (() => {
       if (isCorrect) {
         AudioEngine.playWin();
         TeacherMode.recordGameResult('Monte a Sílaba', true, `Palavra: ${currentItem.word}`);
+        if (window.Championship) {
+          window.Championship.recordMatchResult('Monte a Sílaba', true, currentItem.syllables.length, currentItem.syllables.length);
+        }
         setTimeout(() => {
           AudioEngine.speak(`Parabéns espetacular! Você organizou as sílabas e montou com sucesso a palavra ${currentItem.word}!`);
         }, 500);
@@ -129,3 +132,6 @@ const AssembleSyllablesGame = (() => {
 
   return { init, pickSyllable, unpickSyllable, render };
 })();
+
+window.AssembleSyllablesGame = AssembleSyllablesGame;
+

@@ -15,8 +15,11 @@ const HangmanGame = (() => {
     errors = 0;
 
     const theme = window.GameFeed ? window.GameFeed.getActiveCategoryTheme() : 'aleatorio';
+    // Em modo campeonato usa getRandomWordForChampionship para pegar do nível certo do banco temático
     const item = window.WordManager
-      ? window.WordManager.getRandomWord(theme, level)
+      ? (Championship.isChampionshipModeActive()
+          ? window.WordManager.getRandomWordForChampionship(theme)
+          : window.WordManager.getRandomWord(theme, level))
       : { word: 'BRAILLE', hint: 'Sistema de escrita tátil' };
 
     secretWord = item.word;
@@ -163,4 +166,7 @@ const HangmanGame = (() => {
 
   return { init, guessLetter, render };
 })();
+
+window.HangmanGame = HangmanGame;
+
 

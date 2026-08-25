@@ -68,6 +68,7 @@ const App = (() => {
   function showChampionshipView() {
     currentGameId = null;
     isChampionshipMode = false;
+    Championship.clearChampionshipModeFlag();
     hideAllSections();
 
     const champSection = document.getElementById('championship-section');
@@ -119,7 +120,7 @@ const App = (() => {
     AudioEngine.announceSection('reference-section');
   }
 
-  function launchGame(gameId, level, themeCategory) {
+  function launchGame(gameId, level, themeCategory, themeDbLevel) {
     const gameInfo = GameFeed.getGameById(gameId);
     if (!gameInfo) return;
 
@@ -127,18 +128,24 @@ const App = (() => {
     if (level) currentLevel = level;
     if (themeCategory) currentThemeCategory = themeCategory;
 
-    // Detecta se a partida está rodando sob a categoria Campeonato
-    isChampionshipMode = Championship.isLoggedIn() && document.getElementById('championship-section').style.display !== 'none';
+    // Detecta modo campeonato ANTES de ocultar seções
+    // Usa a flag explícita do Championship (mais confiável que checar display)
+    isChampionshipMode = Championship.isChampionshipModeActive();
 
     hideAllSections();
 
     const gameSection = document.getElementById('game-section');
     if (gameSection) gameSection.style.display = 'block';
 
-    // Injeta a barra de navegação/status do jogo (Com suporte ao botão VOLTAR PARA MINHA TRAJETÓRIA)
+    // Injeta a barra de navegação/status do jogo
     renderActiveGameHeader(gameInfo);
 
     gameSection.scrollIntoView({ behavior: 'smooth' });
+
+    // Se houver themeDbLevel, configura o WordManager para usar o nível certo de tema
+    if (themeDbLevel && window.WordManager && window.WordManager.setChampionshipThemeLevel) {
+      window.WordManager.setChampionshipThemeLevel(themeDbLevel);
+    }
 
     if (gameInfo.module && gameInfo.module.init) {
       gameInfo.module.init(currentLevel);
@@ -300,6 +307,9 @@ const App = (() => {
   };
 })();
 
+window.App = App;
+
 document.addEventListener('DOMContentLoaded', () => {
   App.init();
 });
+

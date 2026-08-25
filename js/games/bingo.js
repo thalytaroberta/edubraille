@@ -55,6 +55,9 @@ const BingoGame = (() => {
         isGameOver = true;
         AudioEngine.playWin();
         TeacherMode.recordGameResult('Bingo de Letras', true, 'Cartela Cheia');
+        if (window.Championship) {
+          window.Championship.recordMatchResult('Bingo de Letras', true, 9, 9);
+        }
         setTimeout(() => {
           AudioEngine.speak('BINGO! BINGO! Parabéns! Você completou toda a cartela do Bingo de Letras!');
         }, 500);
@@ -128,3 +131,6 @@ const BingoGame = (() => {
 
   return { init, drawNextLetter, markCardLetter, render };
 })();
+
+window.BingoGame = BingoGame;
+

@@ -43,6 +43,9 @@ const MathCrosswordGame = (() => {
       if (val === currentProblem.answer) {
         AudioEngine.playWin();
         TeacherMode.recordGameResult('Cruzadas Numéricas', true, `Operação: ${currentProblem.problem} = ${val}`);
+        if (window.Championship) {
+          window.Championship.recordMatchResult('Cruzadas Numéricas', true, 1, 1);
+        }
         setTimeout(() => {
           AudioEngine.speak(`Excelente! ${currentProblem.problem} é igual a ${val}! Resposta numérica correta!`);
         }, 500);
@@ -140,3 +143,6 @@ const MathCrosswordGame = (() => {
 
   return { init, typeDigit, clearDigits, render };
 })();
+
+window.MathCrosswordGame = MathCrosswordGame;
+

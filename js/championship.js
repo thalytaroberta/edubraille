@@ -33,6 +33,22 @@ const Championship = (() => {
     'insano': 3.0
   };
 
+  // Mapeamento de nível do campeonato para o nível interno dos jogos
+  const CHAMP_TO_GAME_LEVEL = {
+    'fácil': 'iniciante',
+    'médio': 'intermediario',
+    'difícil': 'avancado',
+    'insano': 'avancado' // avancado é o teto dos jogos; conteúdo mais difícil vem do tema insano
+  };
+
+  // Mapeamento de nível de jogo para chave do THEMATIC_DATABASES
+  const CHAMP_TO_DB_LEVEL = {
+    'fácil': 'iniciante',
+    'médio': 'intermediario',
+    'difícil': 'avancado',
+    'insano': 'insano'
+  };
+
   // Requisitos de pontuação ou vitórias para subir de nível
   const LEVEL_REQUIREMENTS = {
     'fácil': { next: 'médio', minScore: 400, minWins: 3 },
@@ -57,6 +73,7 @@ const Championship = (() => {
   let activeStudentId = null;
   let activeSubView = 'trajectory'; // 'trajectory' | 'games' | 'ranking' | 'achievements' | 'who_is_playing'
   let currentActiveGameId = null;
+  let _championshipModeActive = false; // flag pública lida pelo App.launchGame
 
   // Participantes padrão do Ranking Geral
   let leaderboardData = [
@@ -653,20 +670,37 @@ const Championship = (() => {
   // VISÃO 3: TELA "ESCOLHA SEU JOGO" (Sem Seleção de Dificuldade)
   // ---------------------------------------------------------------
   function renderGameSelectionHTML(student) {
-    if (!window.GameFeed || !window.GameFeed.GAMES_LIST) return '';
+    const feed = window.GameFeed || (typeof GameFeed !== 'undefined' ? GameFeed : null);
+    const gamesList = (feed && feed.GAMES_LIST) ? feed.GAMES_LIST : [];
+
+    if (!gamesList || gamesList.length === 0) {
+      return `
+        <div class="game-selection-container" role="region" aria-label="Escolha Seu Jogo do Campeonato">
+          <div class="gs-header-banner">
+            <h2>🎮 ESCOLHA SEU JOGO DO CAMPEONATO</h2>
+            <p>Carregando catálogo de jogos da trajetória...</p>
+          </div>
+        </div>
+      `;
+    }
 
     let gamesGridHTML = '';
-    window.GameFeed.GAMES_LIST.forEach(game => {
+    gamesList.forEach(game => {
       gamesGridHTML += `
         <div class="championship-game-select-card">
           <div class="cg-icon">${game.symbol}</div>
           <div class="cg-info">
             <h4>${game.name}</h4>
             <p>${game.summary}</p>
+            <div class="cg-level-pill" style="margin-top: 0.6rem; font-size: 0.9rem;">
+              <span class="badge" style="background: var(--primary-light); color: var(--primary); font-weight: 800; padding: 0.3rem 0.6rem; border-radius: 8px;">
+                🎯 Nível Gradual: ${LEVEL_NAMES[student.currentLevel] || student.currentLevel}
+              </span>
+            </div>
           </div>
           <div class="cg-action">
-            <button type="button" class="btn btn-primary btn-play-champ" onclick="Championship.launchGameFromTrajectory('${game.id}')" aria-label="Jogar ${game.name} no nível ${student.currentLevel}">
-              🎮 JOGAR
+            <button type="button" class="btn btn-primary btn-play-champ" onclick="Championship.launchGameFromTrajectory('${game.id}')" aria-label="Jogar ${game.name} no nível gradual ${student.currentLevel}">
+              🎮 JOGAR AGORA
             </button>
           </div>
         </div>
@@ -676,11 +710,13 @@ const Championship = (() => {
     return `
       <div class="game-selection-container" role="region" aria-label="Escolha Seu Jogo do Campeonato">
         <div class="gs-header-banner">
-          <h2>🎮 ESCOLHA SEU JOGO</h2>
-          <p>Seu nível atual no Campeonato é <strong>${LEVEL_NAMES[student.currentLevel]}</strong>. O sistema selecionará automaticamente a dificuldade e sorteará temas variados sem repetição!</p>
-          <button type="button" class="btn btn-secondary" onclick="Championship.setSubView('trajectory')">
-            ← VOLTAR PARA MINHA TRAJETÓRIA
-          </button>
+          <h2>🎮 JOGOS DA SUA TRAJETÓRIA</h2>
+          <p>Seu nível atual no Campeonato é <strong>${LEVEL_NAMES[student.currentLevel]}</strong>. O nível de dificuldade e o tema das palavras são definidos automaticamente pelo sistema de progressão gradual (sem seleção manual de nível ou assunto). Divirta-se e acumule pontos para o Ranking!</p>
+          <div style="margin-top: 0.5rem;">
+            <button type="button" class="btn btn-secondary" onclick="Championship.setSubView('trajectory')">
+              ← VOLTAR PARA MINHA TRAJETÓRIA
+            </button>
+          </div>
         </div>
 
         <div class="champ-games-list-grid">
@@ -696,10 +732,33 @@ const Championship = (() => {
 
     currentActiveGameId = gameId;
 
+    // Converte nível do campeonato para nível interno dos jogos
+    const gameLevel = CHAMP_TO_GAME_LEVEL[student.currentLevel] || 'iniciante';
+    // Nível para busca no banco de temas (pode ser 'insano')
+    const themeDbLevel = CHAMP_TO_DB_LEVEL[student.currentLevel] || 'iniciante';
+
+    // Seta flag ANTES de chamar launchGame (o App checa isso para definir isChampionshipMode)
+    _championshipModeActive = true;
+
     if (window.App && window.App.launchGame) {
-      // Inicia jogo repassando o nível atual do aluno e tema 'aleatorio' para sorteio
-      window.App.launchGame(gameId, student.currentLevel, 'aleatorio');
+      // Passa o gameLevel para o init do jogo e 'aleatorio' para sorteio de tema
+      window.App.launchGame(gameId, gameLevel, 'aleatorio', themeDbLevel);
     }
+  }
+
+  function isChampionshipModeActive() {
+    return _championshipModeActive;
+  }
+
+  function clearChampionshipModeFlag() {
+    _championshipModeActive = false;
+  }
+
+  // Retorna o nível de jogo (iniciante/intermediario/avancado) com base no nível do campeonato do aluno ativo
+  function getGameLevel() {
+    const student = getActiveStudent();
+    if (!student) return 'iniciante';
+    return CHAMP_TO_GAME_LEVEL[student.currentLevel] || 'iniciante';
   }
 
   // ---------------------------------------------------------------
@@ -979,6 +1038,9 @@ const Championship = (() => {
     toggleUserDropdownModal,
     handleNewRegSubmit,
     launchGameFromTrajectory,
+    isChampionshipModeActive,
+    clearChampionshipModeFlag,
+    getGameLevel,
     openModalConfirmLogout,
     closeConfirmLogoutModal,
     openModalConfirmExitGame,
@@ -987,6 +1049,9 @@ const Championship = (() => {
   };
 })();
 
+window.Championship = Championship;
+
 document.addEventListener('DOMContentLoaded', () => {
   Championship.init();
 });
+

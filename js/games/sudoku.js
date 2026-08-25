@@ -119,6 +119,9 @@ const SudokuGame = (() => {
     if (complete) {
       AudioEngine.playWin();
       TeacherMode.recordGameResult('Sudoku Braille', true, 'Grade 4x4');
+      if (window.Championship) {
+        window.Championship.recordMatchResult('Sudoku Braille', true, size * size, size * size);
+      }
       setTimeout(() => {
         AudioEngine.speak('Parabéns extraordinário! Você completou toda a grade de Sudoku sem repetições!');
       }, 500);
@@ -196,3 +199,6 @@ const SudokuGame = (() => {
 
   return { init, selectCell, setNumber, render };
 })();
+
+window.SudokuGame = SudokuGame;
+

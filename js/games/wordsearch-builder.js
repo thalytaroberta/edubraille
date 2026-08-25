@@ -148,6 +148,9 @@ const WordSearchBuilderGame = (() => {
     if (foundWords.size === targetWords.length) {
       AudioEngine.playWin();
       TeacherMode.recordGameResult('Caça-Palavras Ponto a Ponto', true, `${foundWords.size} palavras formadas`);
+      if (window.Championship) {
+        window.Championship.recordMatchResult('Caça-Palavras Ponto a Ponto', true, foundWords.size, targetWords.length);
+      }
       setTimeout(() => {
         AudioEngine.speak('Parabéns! Você construiu e encontrou todas as palavras!');
       }, 500);
@@ -302,3 +305,6 @@ const WordSearchBuilderGame = (() => {
 
   return { init, selectGridCell, toggleActiveDot, revealCellHint, render };
 })();
+
+window.WordSearchBuilderGame = WordSearchBuilderGame;
+

@@ -321,3 +321,6 @@ const AudioEngine = (() => {
   };
 })();
 
+window.AudioEngine = AudioEngine;
+
+

@@ -150,3 +150,6 @@ const MemoryGame = (() => {
 
   return { init, flipCard, render };
 })();
+
+window.MemoryGame = MemoryGame;
+

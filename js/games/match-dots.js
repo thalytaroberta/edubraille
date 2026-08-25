@@ -54,6 +54,9 @@ const MatchDotsGame = (() => {
       if (matches.size === leftItems.length) {
         AudioEngine.playWin();
         TeacherMode.recordGameResult('Ligue os Pontos', true, `${matches.size} ligações corretas`);
+        if (window.Championship) {
+          window.Championship.recordMatchResult('Ligue os Pontos', true, matches.size, leftItems.length);
+        }
         setTimeout(() => {
           AudioEngine.speak('Parabéns! Você ligou corretamente todas as letras aos seus padrões Braille!');
         }, 500);
@@ -138,3 +141,6 @@ const MatchDotsGame = (() => {
 
   return { init, selectLeft, selectRight, render };
 })();
+
+window.MatchDotsGame = MatchDotsGame;
+

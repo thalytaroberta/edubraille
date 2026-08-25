@@ -16,14 +16,23 @@ const HangmanBuilderGame = (() => {
     currentBlankDots = [];
     errors = 0;
 
-    const db = GAME_DATABASES.words[level] || GAME_DATABASES.words.iniciante;
-    const item = db[Math.floor(Math.random() * db.length)];
+    const theme = window.GameFeed ? window.GameFeed.getActiveCategoryTheme() : 'aleatorio';
+    let item;
+    if (window.WordManager) {
+      item = Championship.isChampionshipModeActive()
+        ? window.WordManager.getRandomWordForChampionship(theme)
+        : window.WordManager.getRandomWord(theme, level);
+    } else {
+      const db = GAME_DATABASES.words[level] || GAME_DATABASES.words.iniciante;
+      item = db[Math.floor(Math.random() * db.length)];
+    }
     secretWord = item.word;
     wordHint = item.hint;
 
     render();
     AudioEngine.speak(`Forca Braille Ponto a Ponto iniciada. Dica: ${wordHint}. Clique nos 6 círculos vazios da célula em branco para montar a letra que deseja tentar.`);
   }
+
 
   function toggleDot(dotNum) {
     const idx = currentBlankDots.indexOf(dotNum);
@@ -233,4 +242,7 @@ const HangmanBuilderGame = (() => {
 
   return { init, toggleDot, submitCurrentLetter, clearBlankCell, render };
 })();
+
+window.HangmanBuilderGame = HangmanBuilderGame;
+
 

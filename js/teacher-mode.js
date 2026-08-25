@@ -459,3 +459,6 @@ const TeacherMode = (() => {
   };
 })();
 
+window.TeacherMode = TeacherMode;
+
+

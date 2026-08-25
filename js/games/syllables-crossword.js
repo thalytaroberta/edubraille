@@ -47,6 +47,9 @@ const SyllableCrosswordGame = (() => {
       if (isCorrect) {
         AudioEngine.playWin();
         TeacherMode.recordGameResult('Cruzadas Silábicas', true, `Palavra: ${currentItem.word}`);
+        if (window.Championship) {
+          window.Championship.recordMatchResult('Cruzadas Silábicas', true, currentItem.syllables.length, currentItem.syllables.length);
+        }
         setTimeout(() => {
           AudioEngine.speak(`Excelente! Você montou a palavra ${currentItem.word} separando corretamente em ${currentItem.syllables.length} sílabas!`);
         }, 500);
@@ -145,3 +148,6 @@ const SyllableCrosswordGame = (() => {
 
   return { init, selectSyllable, removeSyllable, render };
 })();
+
+window.SyllableCrosswordGame = SyllableCrosswordGame;
+
