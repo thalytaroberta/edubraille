@@ -450,10 +450,23 @@ const Championship = (() => {
     `;
   }
 
+  function setSubViewDirectly(viewName) {
+    activeSubView = viewName;
+  }
+
   function setSubView(viewName) {
     activeSubView = viewName;
     const dropdown = document.getElementById('user-profile-dropdown');
     if (dropdown) dropdown.style.display = 'none';
+
+    // Se estivermos dentro da tela de jogo ativo (#game-section), chama App.showChampionshipView para alternar as seções no DOM
+    const gameSec = document.getElementById('game-section');
+    if (gameSec && gameSec.style.display !== 'none') {
+      if (window.App && window.App.showChampionshipView) {
+        window.App.showChampionshipView(viewName);
+        return;
+      }
+    }
 
     renderChampionshipHub();
 
@@ -464,6 +477,10 @@ const Championship = (() => {
       if (viewName === 'ranking') AudioEngine.speak('Página de Ranking Geral dos Alunos.');
       if (viewName === 'achievements') AudioEngine.speak('Página de Minhas Conquistas e Medalhas.');
     }
+  }
+
+  function returnToTrajectory() {
+    setSubView('trajectory');
   }
 
   function toggleUserDropdownModal() {
@@ -970,7 +987,7 @@ const Championship = (() => {
 
           <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 1rem;">
             <button type="button" class="btn btn-primary" onclick="Championship.closeConfirmExitGameModal()">CONTINUAR JOGANDO</button>
-            <button type="button" class="btn btn-danger" onclick="Championship.closeConfirmExitGameModal(); App.showChampionshipView();">SAIR DA PARTIDA</button>
+            <button type="button" class="btn btn-danger" onclick="Championship.closeConfirmExitGameModal(); Championship.returnToTrajectory();">SAIR E VOLTAR À TRAJETÓRIA</button>
           </div>
         </div>
       </div>
@@ -1035,6 +1052,8 @@ const Championship = (() => {
     renderChampionshipHub,
     renderHomeRankingBanner,
     setSubView,
+    setSubViewDirectly,
+    returnToTrajectory,
     toggleUserDropdownModal,
     handleNewRegSubmit,
     launchGameFromTrajectory,

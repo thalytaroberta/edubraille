@@ -65,10 +65,17 @@ const App = (() => {
     }
   }
 
-  function showChampionshipView() {
+  function showChampionshipView(subView = 'trajectory') {
     currentGameId = null;
     isChampionshipMode = false;
     Championship.clearChampionshipModeFlag();
+
+    if (subView && window.Championship && window.Championship.setSubViewDirectly) {
+      window.Championship.setSubViewDirectly(subView);
+    } else if (window.Championship && window.Championship.setSubViewDirectly) {
+      window.Championship.setSubViewDirectly('trajectory');
+    }
+
     hideAllSections();
 
     const champSection = document.getElementById('championship-section');
