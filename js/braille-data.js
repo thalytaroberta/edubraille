@@ -57,6 +57,22 @@ const BRAILLE_MAP = {
   '9': { dots: [2, 4], isNumber: true, name: 'Número 9', desc: 'Sinal de número mais pontos 2 e 4' },
   '0': { dots: [2, 4, 5], isNumber: true, name: 'Número 0', desc: 'Sinal de número mais pontos 2, 4 e 5' },
 
+  // Sinais de Pontuação e Teclas do Teclado Tradicional
+  '(': { dots: [2, 3, 6], name: 'Abre Parêntese (', desc: 'pontos 2, 3 e 6' },
+  ')': { dots: [3, 5, 6], name: 'Fecha Parêntese )', desc: 'pontos 3, 5 e 6' },
+  '@': { dots: [4], name: 'Arroba @', desc: 'ponto 4' },
+  'SHIFT': { dots: [6], name: 'Shift (Sinal de Maiúscula)', desc: 'ponto 6 isolado' },
+  'CAPS LOCK': { dots: [6], name: 'Caps Lock (Caixa Alta Dupla)', desc: 'pontos 6 e 6 seguidos' },
+  ',': { dots: [2], name: 'Vírgula ,', desc: 'ponto 2' },
+  '.': { dots: [3], name: 'Ponto Final .', desc: 'ponto 3' },
+  '?': { dots: [2, 6], name: 'Ponto de Interrogação ?', desc: 'pontos 2 e 6' },
+  '!': { dots: [2, 3, 5], name: 'Ponto de Exclamação !', desc: 'pontos 2, 3 e 5' },
+  '-': { dots: [3, 6], name: 'Hífen / Traço -', desc: 'pontos 3 e 6' },
+  ':': { dots: [2, 5], name: 'Dois Pontos :', desc: 'pontos 2 e 5' },
+  ';': { dots: [2, 3], name: 'Ponto e Vírgula ;', desc: 'pontos 2 e 3' },
+  '"': { dots: [2, 3, 6], name: 'Aspas "', desc: 'pontos 2, 3 e 6' },
+  '/': { dots: [3, 4], name: 'Barra /', desc: 'pontos 3 e 4' },
+
   // Indicador de Número
   '#': { dots: [3, 4, 5, 6], name: 'Sinal de Número', desc: 'pontos 3, 4, 5 e 6' },
   ' ': { dots: [], name: 'Espaço', desc: 'sem pontos elevados' }
@@ -1018,3 +1034,10 @@ const GAME_DATABASES = {
     ]
   }
 };
+
+window.BRAILLE_MAP = BRAILLE_MAP;
+window.getCharInfo = getCharInfo;
+window.renderDualCellHTML = renderDualCellHTML;
+window.dotsToChar = dotsToChar;
+window.textToBrailleSequence = textToBrailleSequence;
+

@@ -108,9 +108,14 @@
 
   </main>
 
+  <!-- Modais Globais Flutuantes do Campeonato -->
+  <div id="modal-confirm-exit-game-container"></div>
+  <div id="modal-confirm-logout-container"></div>
+  <div id="modal-match-result-container"></div>
+
   <!-- Modal de Ajuda de Acessibilidade -->
   <div id="modal-help" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-help-title" aria-hidden="true">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width: 750px;">
       <h2 id="modal-help-title">♿ Ajuda de Acessibilidade & Atalhos</h2>
       <p style="margin-top: 0.5rem;">O site EduBraille é 100% compatível com leitores de tela (NVDA, JAWS, VoiceOver) e linhas braille USB/Bluetooth.</p>
       
@@ -123,6 +128,30 @@
         <li><strong>Alt + H:</strong> Abrir esta janela de ajuda.</li>
         <li><strong>Esc:</strong> Fechar janelas flutuantes ou retornar ao feed.</li>
       </ul>
+
+      <!-- Orientações de Adaptação Tátil do Teclado sem Linha Braille -->
+      <div class="tactical-adaptation-card" style="margin-top: 1.5rem; background: var(--bg-main); border: 2px solid var(--primary); border-radius: var(--radius-md); padding: 1.25rem;">
+        <h3 style="color: var(--primary); display: flex; align-items: center; gap: 0.5rem; font-size: 1.15rem;">
+          <span>💡</span> Acessibilidade Tátil sem Linha Braille (Adaptação de Teclado)
+        </h3>
+        <p style="margin-top: 0.5rem; font-size: 0.95rem; line-height: 1.5;">
+          Para alunos ou escolas que não possuem linha braille USB/Bluetooth, é simples deixar o teclado tradicional de computador 100% tátil e acessível!
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 0.95rem; line-height: 1.5; font-weight: 700; color: var(--text-main);">
+          🛠️ Técnica Recomendada: Utilização de colagem de meia pérola de 04 milímetros (04mm) para a construção de celas Braille (pontos 1 a 6) nas teclas do teclado tradicional.
+        </p>
+        
+        <div class="keyboard-gallery" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1rem;">
+          <div class="gallery-item" style="text-align: center;">
+            <img src="img/teclado-braille-meia-perola-1.jpg" alt="Foto de teclado de notebook adaptado com meias pérolas de 04mm em cada tecla formando os pontos braille das letras Q, W, E, R, A, S, D" style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color); max-height: 220px; object-fit: cover;">
+            <small style="display: block; margin-top: 0.35rem; color: var(--text-muted); font-weight: 600;">Foto 1: Teclas adaptadas com meias pérolas de 4mm (vista aproximada)</small>
+          </div>
+          <div class="gallery-item" style="text-align: center;">
+            <img src="img/teclado-braille-meia-perola-2.jpg" alt="Foto ampla do teclado do notebook Positivo adaptado com relevo tátil de meia pérola nas teclas" style="width: 100%; border-radius: 8px; border: 1px solid var(--border-color); max-height: 220px; object-fit: cover;">
+            <small style="display: block; margin-top: 0.35rem; color: var(--text-muted); font-weight: 600;">Foto 2: Teclado de notebook completo com celas Braille táteis</small>
+          </div>
+        </div>
+      </div>
 
       <div style="margin-top: 1.5rem; text-align: right;">
         <button type="button" class="btn btn-primary" onclick="App.closeAllModals()">Entendi / Fechar</button>

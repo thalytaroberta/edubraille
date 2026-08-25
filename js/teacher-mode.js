@@ -252,9 +252,9 @@ const TeacherMode = (() => {
     const keys = Object.keys(BRAILLE_MAP).filter(k => k !== '#');
 
     let html = `
-      <div class="reference-chart-toolbar">
-        <input type="text" id="ref-search-input" class="form-control" placeholder="Buscar letra ou número..." oninput="TeacherMode.filterReferenceChart(this.value)" aria-label="Buscar na tabela de referência Braille">
-        <button type="button" class="btn btn-secondary" onclick="AudioEngine.speak('Tabela de referência Braille contendo todas as 26 letras, caracteres acentuados e números de 0 a 9 com seus respectivos pontos 1 a 6.')">
+      <div class="reference-chart-toolbar" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+        <input type="text" id="ref-search-input" class="form-control" style="flex: 1; min-width: 250px;" placeholder="Buscar letra, número, pontuação ou tecla (ex: Shift, @, Caps Lock, parêntese)..." oninput="TeacherMode.filterReferenceChart(this.value)" aria-label="Buscar na tabela de referência Braille">
+        <button type="button" class="btn btn-secondary" onclick="AudioEngine.speak('Tabela de referência Braille contendo todas as 26 letras, caracteres acentuados, números e pontuações e teclas do teclado tradicional como Shift, Caps Lock, Arroba e Parênteses.')">
           🔊 Ouvir Resumo da Tabela
         </button>
       </div>
@@ -273,8 +273,9 @@ const TeacherMode = (() => {
     const q = query.trim().toUpperCase();
     const items = document.querySelectorAll('#reference-grid-items .dual-cell-card');
     items.forEach(card => {
-      const char = card.getAttribute('data-char');
-      card.style.display = (!q || char.includes(q)) ? 'flex' : 'none';
+      const char = (card.getAttribute('data-char') || '').toUpperCase();
+      const label = (card.getAttribute('aria-label') || '').toUpperCase();
+      card.style.display = (!q || char.includes(q) || label.includes(q)) ? 'flex' : 'none';
     });
   }
 
