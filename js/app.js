@@ -1,5 +1,8 @@
 /**
  * EduBraille Main Application Controller
+ * Controlador principal do aplicativo EduBraille: gerencia rotas, abas,
+ * ativação de visões (Feed, Campeonato, Professor AEE, Referência Braille e Jogo),
+ * e dispara a leitura espacial automática por voz a cada navegação.
  */
 
 const App = (() => {
@@ -13,14 +16,102 @@ const App = (() => {
 
   function init() {
     TeacherMode.init();
-    GameFeed.renderFeed('game-feed-container');
+    Championship.init();
+    
+    // Renderiza a página inicial (Feed + Banner do Campeonato)
+    returnToFeed(false);
     TeacherMode.renderReferenceChart('braille-reference-container');
-    TeacherMode.renderStatsDashboard();
 
     setupKeyboardShortcuts();
-    setupEventListeners();
 
-    AudioEngine.speak('Bem-vindo ao EduBraille Games! Plataforma de jogos acessíveis em Tinta e Braille. Escolha um tema de palavras ou selecione um nível para começar.');
+    setTimeout(() => {
+      AudioEngine.announceSection('feed');
+    }, 500);
+  }
+
+  /**
+   * Oculta todas as seções e remove classe active dos botões da nav
+   */
+  function hideAllSections() {
+    ['feed-section', 'championship-section', 'teacher-aee-section', 'game-section', 'reference-section'].forEach(id => {
+      const sec = document.getElementById(id);
+      if (sec) sec.style.display = 'none';
+    });
+
+    document.querySelectorAll('.nav-tab-btn').forEach(btn => btn.classList.remove('active'));
+  }
+
+  function returnToFeed(announce = true) {
+    currentGameId = null;
+    hideAllSections();
+
+    const feedSection = document.getElementById('feed-section');
+    if (feedSection) feedSection.style.display = 'block';
+
+    const feedBtn = document.getElementById('nav-btn-feed');
+    if (feedBtn) feedBtn.classList.add('active');
+
+    // Renderiza o ranking da home e o catálogo
+    Championship.renderHomeRankingBanner('home-ranking-banner-container');
+    GameFeed.renderFeed('game-feed-container');
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (announce) {
+      AudioEngine.playClick();
+      AudioEngine.announceSection('feed-section');
+    }
+  }
+
+  function showChampionshipView() {
+    currentGameId = null;
+    hideAllSections();
+
+    const champSection = document.getElementById('championship-section');
+    if (champSection) champSection.style.display = 'block';
+
+    const champBtn = document.getElementById('nav-btn-championship');
+    if (champBtn) champBtn.classList.add('active');
+
+    Championship.renderChampionshipHub();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    AudioEngine.playClick();
+    AudioEngine.announceSection('championship-section');
+  }
+
+  function showAEETeacherDashboard() {
+    currentGameId = null;
+    hideAllSections();
+
+    const teacherSection = document.getElementById('teacher-aee-section');
+    if (teacherSection) teacherSection.style.display = 'block';
+
+    const teacherBtn = document.getElementById('nav-btn-teacher');
+    if (teacherBtn) teacherBtn.classList.add('active');
+
+    TeacherMode.renderAEETeacherHub('teacher-aee-container');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    AudioEngine.playClick();
+    AudioEngine.announceSection('teacher-section');
+  }
+
+  function showReferenceChart() {
+    currentGameId = null;
+    hideAllSections();
+
+    const refSection = document.getElementById('reference-section');
+    if (refSection) refSection.style.display = 'block';
+
+    const refBtn = document.getElementById('nav-btn-reference');
+    if (refBtn) refBtn.classList.add('active');
+
+    TeacherMode.renderReferenceChart('braille-reference-container');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    AudioEngine.playClick();
+    AudioEngine.announceSection('reference-section');
   }
 
   function launchGame(gameId, level, themeCategory) {
@@ -31,21 +122,10 @@ const App = (() => {
     if (level) currentLevel = level;
     if (themeCategory) currentThemeCategory = themeCategory;
 
-    // Atualiza palavras do banco com base no tema e nível selecionados
-    if (window.GAME_DATABASES && window.getWordsByThemeAndLevel) {
-      window.GAME_DATABASES.words = {
-        iniciante: getWordsByThemeAndLevel(currentThemeCategory, 'iniciante'),
-        intermediario: getWordsByThemeAndLevel(currentThemeCategory, 'intermediario'),
-        avancado: getWordsByThemeAndLevel(currentThemeCategory, 'avancado')
-      };
-    }
+    hideAllSections();
 
-    document.getElementById('feed-section').style.display = 'none';
-    document.getElementById('teacher-section').style.display = 'none';
-    document.getElementById('reference-section').style.display = 'none';
-    
     const gameSection = document.getElementById('game-section');
-    gameSection.style.display = 'block';
+    if (gameSection) gameSection.style.display = 'block';
     gameSection.scrollIntoView({ behavior: 'smooth' });
 
     if (gameInfo.module && gameInfo.module.init) {
@@ -53,46 +133,7 @@ const App = (() => {
     }
 
     AudioEngine.playClick();
-  }
-
-  function returnToFeed() {
-    currentGameId = null;
-    document.getElementById('game-section').style.display = 'none';
-    document.getElementById('teacher-section').style.display = 'none';
-    document.getElementById('reference-section').style.display = 'none';
-    
-    const feedSection = document.getElementById('feed-section');
-    feedSection.style.display = 'block';
-    GameFeed.renderFeed('game-feed-container');
-    feedSection.scrollIntoView({ behavior: 'smooth' });
-
-    AudioEngine.playClick();
-    AudioEngine.speak('Retornado ao Feed de Jogos.');
-  }
-
-  function showTeacherDashboard() {
-    document.getElementById('feed-section').style.display = 'none';
-    document.getElementById('game-section').style.display = 'none';
-    document.getElementById('reference-section').style.display = 'none';
-    
-    const section = document.getElementById('teacher-section');
-    section.style.display = 'block';
-    TeacherMode.renderStatsDashboard();
-    section.scrollIntoView({ behavior: 'smooth' });
-
-    AudioEngine.speak('Painel do Professor aberto.');
-  }
-
-  function showReferenceChart() {
-    document.getElementById('feed-section').style.display = 'none';
-    document.getElementById('game-section').style.display = 'none';
-    document.getElementById('teacher-section').style.display = 'none';
-
-    const section = document.getElementById('reference-section');
-    section.style.display = 'block';
-    section.scrollIntoView({ behavior: 'smooth' });
-
-    AudioEngine.speak('Tabela de Referência Braille aberta.');
+    AudioEngine.announceSection('game-section');
   }
 
   function getCurrentLevel() {
@@ -115,6 +156,15 @@ const App = (() => {
     const themeName = THEME_NAMES[currentThemeIndex];
     AudioEngine.speak(`Tema visual alterado para: ${themeName}`);
     AudioEngine.playClick();
+  }
+
+  function toggleGlobalSpeech() {
+    const isEnabled = AudioEngine.toggleTTS();
+    const btn = document.getElementById('btn-tts-toggle');
+    if (btn) {
+      btn.innerText = isEnabled ? '🔊 Voz On' : '🔇 Voz Off';
+    }
+    AudioEngine.speak(isEnabled ? 'Voz ativada' : 'Voz desativada');
   }
 
   function refreshCurrentGame() {
@@ -140,8 +190,7 @@ const App = (() => {
             break;
           case 's':
             e.preventDefault();
-            const state = AudioEngine.toggleTTS();
-            AudioEngine.speak(state ? 'Voz ativada' : 'Voz desativada');
+            toggleGlobalSpeech();
             break;
           case 'f':
             e.preventDefault();
@@ -159,24 +208,6 @@ const App = (() => {
         if (currentGameId) returnToFeed();
       }
     });
-  }
-
-  function setupEventListeners() {
-    const customWordForm = document.getElementById('form-custom-word');
-    if (customWordForm) {
-      customWordForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const wordInput = document.getElementById('input-custom-word');
-        const hintInput = document.getElementById('input-custom-hint');
-        if (wordInput && hintInput) {
-          const success = TeacherMode.addCustomWord(wordInput.value, hintInput.value);
-          if (success) {
-            wordInput.value = '';
-            hintInput.value = '';
-          }
-        }
-      });
-    }
   }
 
   function openHelpModal() {
@@ -200,11 +231,13 @@ const App = (() => {
     init,
     launchGame,
     returnToFeed,
-    showTeacherDashboard,
+    showChampionshipView,
+    showAEETeacherDashboard,
     showReferenceChart,
     getCurrentLevel,
     setGameLevel,
     cycleTheme,
+    toggleGlobalSpeech,
     refreshCurrentGame,
     openHelpModal,
     closeAllModals

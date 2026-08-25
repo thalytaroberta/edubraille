@@ -278,6 +278,146 @@ const TeacherMode = (() => {
     });
   }
 
+  function getCustomWords() {
+    return customWordBank;
+  }
+
+  function renderAEETeacherHub(containerId = 'teacher-aee-container') {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const games = window.GameFeed ? window.GameFeed.GAMES_LIST : [];
+    let gameOptionsHTML = games.map(g => `<option value="${g.id}">${g.symbol} ${g.name}</option>`).join('');
+
+    let customWordsListHTML = '';
+    if (customWordBank.length === 0) {
+      customWordsListHTML = '<p class="text-muted">Nenhuma palavra personalizada cadastrada ainda.</p>';
+    } else {
+      customWordsListHTML = '<ul class="custom-words-list">';
+      customWordBank.forEach((item, idx) => {
+        customWordsListHTML += `
+          <li class="custom-word-item">
+            <strong>${item.word}</strong> — <small>Dica: ${item.hint}</small>
+          </li>
+        `;
+      });
+      customWordsListHTML += '</ul>';
+    }
+
+    container.innerHTML = `
+      <div class="teacher-aee-wrapper">
+        <div class="teacher-aee-header">
+          <h2>🎓 Painel do Professor de AEE</h2>
+          <p>Personalize jogos, conteúdos, níveis de dificuldade e vocabulário de acordo com os objetivos pedagógicos do seu aluno.</p>
+        </div>
+
+        <div class="aee-grid-layout">
+          <!-- Coluna 1: Configuração e Seleção da Atividade -->
+          <div class="aee-card-box">
+            <h3>⚙️ Configuração de Atividade Pedagógica</h3>
+            
+            <form id="form-aee-launcher" onsubmit="event.preventDefault(); TeacherMode.launchCustomAEEGame();">
+              <div class="form-group" style="margin-bottom: 1.25rem;">
+                <label for="aee-select-game"><strong>1. Selecionar o Jogo Pedagógico:</strong></label>
+                <select id="aee-select-game" class="form-control" style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid var(--border-color);" aria-label="Selecionar jogo pedagógico">
+                  ${gameOptionsHTML}
+                </select>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 1.25rem;">
+                <label for="aee-select-level"><strong>2. Selecionar o Nível de Dificuldade:</strong></label>
+                <select id="aee-select-level" class="form-control" style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid var(--border-color);" aria-label="Selecionar nível de dificuldade">
+                  <option value="iniciante">🟢 Fácil (Iniciante - Palavras curtas)</option>
+                  <option value="intermediario">🟡 Médio (Intermediário - Palavras médias)</option>
+                  <option value="avancado">🔴 Difícil (Avançado - Palavras longas)</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 1.25rem;">
+                <label for="aee-select-theme"><strong>3. Selecionar o Tema / Conteúdo Curricular:</strong></label>
+                <select id="aee-select-theme" class="form-control" style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid var(--border-color);" aria-label="Selecionar tema de conteúdo">
+                  <option value="aleatorio">🎲 Aleatório / Diversos</option>
+                  <option value="musica">🎵 Música</option>
+                  <option value="geografia">🌍 Geografia</option>
+                  <option value="internet">🌐 Internet</option>
+                  <option value="animais">🐾 Animais</option>
+                  <option value="desenhos">🎬 Desenhos Animados</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label><strong>4. Opções Pedagógicas de Acessibilidade:</strong></label>
+                <div style="margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                  <label><input type="checkbox" id="aee-toggle-teacher-side" checked> Ativar Painel Lateral com Padrão Braille (Modo Professor)</label>
+                  <label><input type="checkbox" id="aee-toggle-voice" checked> Ativar Leitura por Voz dos Pontos e Dicas</label>
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+                🎮 Lançar Atividade Personalizada para o Aluno
+              </button>
+            </form>
+          </div>
+
+          <!-- Coluna 2: Banco de Palavras Personalizadas -->
+          <div class="aee-card-box">
+            <h3>➕ Banco de Palavras Personalizadas</h3>
+            <p class="text-muted">Cadastre palavras específicas do currículo do aluno (ex: família, nomes, objetos da sala de aula).</p>
+
+            <form id="form-aee-custom-word" onsubmit="event.preventDefault(); TeacherMode.handleCustomWordSubmit();" style="margin-bottom: 1.5rem;">
+              <div class="form-group" style="margin-bottom: 1rem;">
+                <input type="text" id="aee-custom-word-input" class="form-control" placeholder="Palavra (ex: ESCOLA)" required style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid var(--border-color);" aria-label="Nova palavra personalizada">
+              </div>
+              <div class="form-group" style="margin-bottom: 1rem;">
+                <input type="text" id="aee-custom-hint-input" class="form-control" placeholder="Dica acessível (ex: Lugar onde aprendemos)" required style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid var(--border-color);" aria-label="Dica para a palavra">
+              </div>
+              <button type="submit" class="btn btn-secondary" style="width: 100%;">
+                ➕ Adicionar ao Banco do Aluno
+              </button>
+            </form>
+
+            <h4>Palavras Personalizadas Cadastradas:</h4>
+            ${customWordsListHTML}
+          </div>
+        </div>
+
+        <!-- Relatório de Acompanhamento do Aluno -->
+        <div class="aee-card-box" style="margin-top: 2rem;">
+          <h3>📊 Relatório de Desempenho e Acompanhamento AEE</h3>
+          <div id="teacher-stats-container"></div>
+        </div>
+      </div>
+    `;
+
+    renderStatsDashboard();
+  }
+
+  function launchCustomAEEGame() {
+    const gameId = document.getElementById('aee-select-game').value;
+    const level = document.getElementById('aee-select-level').value;
+    const theme = document.getElementById('aee-select-theme').value;
+    const teacherSide = document.getElementById('aee-toggle-teacher-side').checked;
+
+    toggleTeacherMode(teacherSide);
+
+    if (window.App && window.App.launchGame) {
+      window.App.launchGame(gameId, level, theme);
+    }
+  }
+
+  function handleCustomWordSubmit() {
+    const wordInput = document.getElementById('aee-custom-word-input');
+    const hintInput = document.getElementById('aee-custom-hint-input');
+    if (wordInput && hintInput) {
+      const ok = addCustomWord(wordInput.value, hintInput.value);
+      if (ok) {
+        wordInput.value = '';
+        hintInput.value = '';
+        renderAEETeacherHub('teacher-aee-container');
+      }
+    }
+  }
+
   return {
     init,
     toggleTeacherMode,
@@ -285,8 +425,13 @@ const TeacherMode = (() => {
     buildTeacherPanel,
     recordGameResult,
     addCustomWord,
+    getCustomWords,
     renderStatsDashboard,
     renderReferenceChart,
-    filterReferenceChart
+    filterReferenceChart,
+    renderAEETeacherHub,
+    launchCustomAEEGame,
+    handleCustomWordSubmit
   };
 })();
+

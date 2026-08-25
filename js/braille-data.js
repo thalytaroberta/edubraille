@@ -217,7 +217,7 @@ function renderInteractiveEmptyCellHTML(cellId, currentDots = [], onToggleFuncti
   `;
 }
 
-// BANCO DE DADOS ORGANIZADO POR TEMAS E NÍVEIS (INICIANTE, INTERMEDIÁRIO, AVANÇADO)
+// BANCO DE DADOS ORGANIZADO POR TEMAS E NÍVEIS (INICIANTE, INTERMEDIÁRIO, AVANÇADO, INSANO)
 const THEMATIC_DATABASES = {
   musica: {
     iniciante: [
@@ -238,6 +238,13 @@ const THEMATIC_DATABASES = {
       { word: 'VIOLINO', hint: 'Instrumento de cordas tocado com arco' },
       { word: 'BATERIA', hint: 'Conjunto de percussão com pratos e tambores' },
       { word: 'ORQUESTRA', hint: 'Grande conjunto de músicos e instrumentos' }
+    ],
+    insano: [
+      { word: 'MAESTRO', hint: 'Regente da orquestra e dos arranjos musicais' },
+      { word: 'SINFONIA', hint: 'Composição musical complexa executada por orquestra' },
+      { word: 'PARTITURA', hint: 'Registro gráfico das notas e pauta musical' },
+      { word: 'CLARINETE', hint: 'Instrumento de sopro com palheta simples' },
+      { word: 'CONTRABAXO', hint: 'Grande instrumento de cordas graves' }
     ]
   },
   geografia: {
@@ -259,6 +266,12 @@ const THEMATIC_DATABASES = {
       { word: 'FLORESTA', hint: 'Área com muitas árvores e vegetação' },
       { word: 'CAPITAL', hint: 'Cidade onde fica o governo do estado ou país' },
       { word: 'PLANETA', hint: 'Corpo celeste como a Terra que orbita o Sol' }
+    ],
+    insano: [
+      { word: 'HEMISFERIO', hint: 'Metade da esfera terrestre dividida pela linha do Equador' },
+      { word: 'ARQUIPELAGO', hint: 'Conjunto ou grupo de várias ilhas próximas' },
+      { word: 'MERIDIANO', hint: 'Linha imaginária vertical que cruza o planeta de polo a polo' },
+      { word: 'ECOSSISTEMA', hint: 'Conjunto de seres vivos e ambiente interagindo entre si' }
     ]
   },
   internet: {
@@ -279,6 +292,12 @@ const THEMATIC_DATABASES = {
       { word: 'NAVEGADOR', hint: 'Programa usado para acessar a internet' },
       { word: 'CONEXAO', hint: 'Ligação com a rede de internet' },
       { word: 'DISPOSITIVO', hint: 'Aparelho eletrônico como celular ou tablet' }
+    ],
+    insano: [
+      { word: 'ALGORITMO', hint: 'Sequência de instruções lógicas para resolver um problema' },
+      { word: 'PROGRAMACAO', hint: 'Arte de escrever códigos para sistemas digitais' },
+      { word: 'SEGURANCA', hint: 'Proteção de informações e dados na rede' },
+      { word: 'PROCESSADOR', hint: 'Cérebro eletrônico do computador' }
     ]
   },
   animais: {
@@ -300,6 +319,12 @@ const THEMATIC_DATABASES = {
       { word: 'TUBARAO', hint: 'Grande predador do oceano' },
       { word: 'GOLFINHO', hint: 'Mamífero marinho inteligente e amigável' },
       { word: 'GIRAFAS', hint: 'Animais do cerrado com pescoço muito alto' }
+    ],
+    insano: [
+      { word: 'RINOCERONTE', hint: 'Grande mamífero terrestre com chifre no focinho' },
+      { word: 'HIPOPOTAMO', hint: 'Animal semiquático grande que vive na África' },
+      { word: 'ORNITORRINCO', hint: 'Exótico mamífero aquático que bota ovos' },
+      { word: 'CAMALEAO', hint: 'Répteis que mudam de cor para se camuflar' }
     ]
   },
   desenhos: {
@@ -320,6 +345,12 @@ const THEMATIC_DATABASES = {
       { word: 'AVENTURA', hint: 'Jornada cheia de emoção e desafios' },
       { word: 'FANTASIA', hint: 'Mundo imaginário cheio de magia' },
       { word: 'CINEMA', hint: 'Lugar onde assistimos grandes filmes' }
+    ],
+    insano: [
+      { word: 'SUPERHEROI', hint: 'Defensor da justiça com superpoderes incríveis' },
+      { word: 'EXTRAORDINARIO', hint: 'Algo incrível e fora do comum' },
+      { word: 'TRANSFORMACAO', hint: 'Mudança mágica de forma do personagem' },
+      { word: 'ANIMACAO', hint: 'Técnica de dar vida e movimento a ilustrações' }
     ]
   }
 };
@@ -342,11 +373,12 @@ function getWordsByThemeAndLevel(theme = 'aleatorio', level = 'iniciante') {
   });
 
   if (combined.length === 0) {
-    // Fallback genérico
-    combined = THEMATIC_DATABASES.animais.iniciante;
+    // Fallback genérico se nível não bater exatamente
+    combined = THEMATIC_DATABASES.animais[level] || THEMATIC_DATABASES.animais.iniciante;
   }
   return combined;
 }
+
 
 // Manter compatibilidade com GAME_DATABASES antigo
 const GAME_DATABASES = {

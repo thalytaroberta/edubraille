@@ -197,6 +197,66 @@ const AudioEngine = (() => {
     }
   }
 
+  // ---------------------------------------------------------------
+  // Navegação guiada por voz com orientação espacial da interface
+  // ---------------------------------------------------------------
+  function announceSection(sectionId) {
+    if (!ttsEnabled) return;
+
+    let announcement = '';
+
+    switch (sectionId) {
+      case 'feed':
+      case 'feed-section':
+        announcement = 'Você está na página inicial do EduBraille Games. No topo da tela encontra-se o menu principal com opções para o Professor de AEE, Campeonato, Tabela Braille, Cores e Ajustes de Voz. No centro da tela está o catálogo de jogos acessíveis com filtros por dificuldade e tema de palavras. Na parte inferior encontra-se o rodapé pedagógico. Selecione um jogo para começar!';
+        break;
+
+      case 'teacher-aee':
+      case 'teacher-section':
+        announcement = 'Você está na área do Professor de AEE. No topo da tela estão os botões para retornar ao feed. No centro da tela encontra-se o painel de personalização dos jogos, seleção de dificuldade, escolha de temas pedagógicos e cadastro de palavras personalizadas. Abaixo está o relatório de progresso e estatísticas de atividades do aluno.';
+        break;
+
+      case 'championship':
+      case 'championship-section':
+        announcement = 'Você está na arena do Campeonato EduBraille. No topo da tela encontra-se o perfil do aluno e o progresso nos níveis progressivos: Fácil, Médio, Difícil e Insano. No centro da tela encontram-se os jogos do campeonato com nivelamento automático. Na parte inferior está o ranking geral com medalhas, pódio e pontuação dos alunos.';
+        break;
+
+      case 'game-section':
+      case 'game':
+        announcement = 'Você está na tela de jogo ativo. No topo da tela encontra-se o botão para voltar ao catálogo. No centro encontra-se a área principal do jogo, compatível com teclado convencional e teclado adaptado para Braille com pontos de 1 a 6. No lado direito ou inferior encontra-se o painel com a resposta e o padrão Braille de cada letra.';
+        break;
+
+      case 'reference-section':
+      case 'reference':
+        announcement = 'Você está na página de Tabela de Referência Braille. No topo da tela encontra-se o campo de busca de caracteres. No centro estão os cartões táteis apresentando todas as 26 letras do alfabeto, caracteres acentuados e números com seus respectivos pontos elevados de 1 a 6.';
+        break;
+
+      default:
+        announcement = 'Navegação realizada com sucesso.';
+    }
+
+    speak(announcement, true);
+  }
+
+  function speakGameResult(result) {
+    if (!ttsEnabled || !result) return;
+    const { gameName, score, correctWords, totalWords, level, won } = result;
+    let text = `Partida finalizada no jogo ${gameName || 'Braille'}. `;
+    if (won !== undefined) {
+      text += won ? 'Parabéns, você venceu! ' : 'Fim de jogo! ';
+    }
+    if (correctWords !== undefined && totalWords !== undefined) {
+      text += `Você acertou ${correctWords} de ${totalWords} palavras. `;
+    }
+    if (score !== undefined) {
+      text += `Sua pontuação nesta partida foi ${score} pontos. `;
+    }
+    if (level) {
+      text += `Nível atual: ${level}.`;
+    }
+    speak(text, true);
+  }
+
   // Getters & Setters de Configurações
   function toggleTTS(enabled) {
     ttsEnabled = enabled !== undefined ? enabled : !ttsEnabled;
@@ -237,6 +297,8 @@ const AudioEngine = (() => {
     speak,
     speakLetter,
     stopSpeech,
+    announceSection,
+    speakGameResult,
     playClick,
     playSuccess,
     playError,
@@ -249,3 +311,4 @@ const AudioEngine = (() => {
     isTTSEnabled
   };
 })();
+

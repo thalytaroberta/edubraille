@@ -34,19 +34,22 @@
       </div>
 
       <nav class="header-actions" role="navigation" aria-label="Menu principal e acessibilidade">
-        <button type="button" id="btn-toggle-teacher-mode" class="btn btn-toggle-teacher" onclick="TeacherMode.toggleTeacherMode()" aria-pressed="false" title="Atalho: Alt + P">
-          🎓 Modo Professor
+        <button type="button" class="btn btn-secondary nav-tab-btn active" id="nav-btn-feed" onclick="App.returnToFeed()" aria-label="Ver Catálogo de Jogos Livres">
+          🏠 Jogos Livres
         </button>
-        <button type="button" class="btn btn-secondary" onclick="App.showReferenceChart()" aria-label="Abrir Tabela de Referência Braille">
+        <button type="button" class="btn btn-secondary nav-tab-btn" id="nav-btn-championship" onclick="App.showChampionshipView()" aria-label="Entrar na Categoria Campeonato">
+          🏆 Campeonato
+        </button>
+        <button type="button" class="btn btn-secondary nav-tab-btn" id="nav-btn-teacher" onclick="App.showAEETeacherDashboard()" aria-label="Abrir Painel do Professor de AEE">
+          🎓 Professor de AEE
+        </button>
+        <button type="button" class="btn btn-secondary nav-tab-btn" id="nav-btn-reference" onclick="App.showReferenceChart()" aria-label="Abrir Tabela de Referência Braille">
           📖 Tabela Braille
-        </button>
-        <button type="button" class="btn btn-secondary" onclick="App.showTeacherDashboard()" aria-label="Abrir Painel de Estatísticas do Aluno">
-          📊 Painel AEE
         </button>
         <button type="button" class="btn btn-secondary" onclick="App.cycleTheme()" title="Atalho: Alt + T" aria-label="Trocar Tema de Contraste">
           🎨 Tema
         </button>
-        <button type="button" class="btn btn-secondary" onclick="AudioEngine.toggleTTS(); this.innerText = AudioEngine.isTTSEnabled() ? '🔊 Voz On' : '🔇 Voz Off';" title="Atalho: Alt + S">
+        <button type="button" id="btn-tts-toggle" class="btn btn-secondary" onclick="App.toggleGlobalSpeech()" title="Atalho: Alt + S">
           🔊 Voz On
         </button>
         <button type="button" class="btn btn-secondary" onclick="App.openHelpModal()" title="Atalho: Alt + H" aria-label="Ajuda e Atalhos de Teclado">
@@ -62,48 +65,39 @@
     <!-- Seção Banner de Boas-Vindas -->
     <section class="feed-header-banner" role="region" aria-label="Boas-vindas ao EduBraille">
       <h1>Jogos Educativos de Braille</h1>
-      <p>Aprenda e pratique a leitura e escrita Braille com jogos interativos, leitura por voz e exibição simultânea em Tinta e Braille.</p>
-      <button type="button" class="btn btn-secondary" style="margin-top: 1rem;" onclick="AudioEngine.speak('Bem-vindo ao EduBraille Games! Plataforma de jogos acessíveis para aprendizagem do Braille. Alunos utilizam a linha braille ou toque, e professores acompanham a leitura em tinta e braille lado a lado.')">
+      <p>Plataforma de jogos educativos acessíveis para alunos alfabetizandos e professores de AEE (Atendimento Educacional Especializado).</p>
+      <button type="button" class="btn btn-secondary" style="margin-top: 1rem;" onclick="AudioEngine.speak('Bem-vindo ao EduBraille Games! Plataforma de jogos acessíveis em Tinta e Braille. Navegue pelas categorias: Jogos Livres, Campeonato e Professor de AEE.')">
         🔊 Ouvir Apresentação do Site
       </button>
     </section>
 
-    <!-- Seção 1: Feed de Jogos -->
-    <section id="feed-section" role="region" aria-label="Feed de Jogos">
+    <!-- Seção 1: Feed de Jogos Livres -->
+    <section id="feed-section" role="region" aria-label="Feed de Jogos Livres">
+      <!-- Destaque do Campeonato na Página Inicial -->
+      <div id="home-ranking-banner-container" style="margin-bottom: 1.5rem;"></div>
+
       <div id="game-feed-container"></div>
     </section>
 
-    <!-- Seção 2: Container do Jogo Ativo -->
+    <!-- Seção 2: Categoria Campeonato -->
+    <section id="championship-section" style="display: none;" role="region" aria-label="Área do Campeonato EduBraille">
+      <div id="championship-container"></div>
+    </section>
+
+    <!-- Seção 3: Categoria Professor de AEE -->
+    <section id="teacher-aee-section" style="display: none;" role="region" aria-label="Área do Professor de AEE">
+      <div id="teacher-aee-container"></div>
+    </section>
+
+    <!-- Seção 4: Container do Jogo Ativo -->
     <section id="game-section" style="display: none;" role="region" aria-label="Área do Jogo Ativo">
       <button type="button" class="btn btn-secondary" onclick="App.returnToFeed()" style="margin-bottom: 1rem;" aria-label="Voltar para o Feed de Jogos">
-        ⬅ Voltar para o Feed de Jogos (Alt + F)
+        ⬅ Voltar ao Feed de Jogos (Alt + F)
       </button>
       <div id="game-container"></div>
     </section>
 
-    <!-- Seção 3: Painel do Professor / AEE -->
-    <section id="teacher-section" style="display: none;" role="region" aria-label="Painel do Professor">
-      <div class="game-wrapper">
-        <div class="game-header-bar">
-          <h2>📊 Painel de Acompanhamento do Aluno (AEE)</h2>
-          <button type="button" class="btn btn-secondary" onclick="App.returnToFeed()">⬅ Voltar ao Feed</button>
-        </div>
-
-        <div id="teacher-stats-container"></div>
-
-        <div class="custom-word-builder-box" style="margin-top: 2.5rem; border-top: 2px solid var(--border-color); padding-top: 1.5rem;">
-          <h3>➕ Adicionar Palavras Personalizadas ao Banco</h3>
-          <p class="text-muted">Crie palavras específicas com dicas para os jogos da Forca e Caça-Palavras.</p>
-          <form id="form-custom-word" style="margin-top: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-            <input type="text" id="input-custom-word" class="form-control" placeholder="Nova palavra (ex: FLORESTA)" required style="padding: 0.65rem; font-size: 1rem; border-radius: 8px; border: 1px solid var(--border-color);" aria-label="Nova palavra">
-            <input type="text" id="input-custom-hint" class="form-control" placeholder="Dica (ex: Lugar cheio de árvores)" required style="flex: 1; min-width: 250px; padding: 0.65rem; font-size: 1rem; border-radius: 8px; border: 1px solid var(--border-color);" aria-label="Dica da palavra">
-            <button type="submit" class="btn btn-primary">Adicionar Palavra</button>
-          </form>
-        </div>
-      </div>
-    </section>
-
-    <!-- Seção 4: Tabela de Referência Braille -->
+    <!-- Seção 5: Tabela de Referência Braille -->
     <section id="reference-section" style="display: none;" role="region" aria-label="Tabela de Referência Braille">
       <div class="game-wrapper">
         <div class="game-header-bar">
@@ -138,7 +132,7 @@
     </div>
   </div>
 
-  <!-- Rodapé com nota de rodapé pedagógica -->
+  <!-- Rodapé com nota pedagógica -->
   <footer class="site-footer" role="contentinfo">
     <p>EduBraille Games — Plataforma Educativa para Atendimento Educacional Especializado (AEE).</p>
     <div class="course-footnote" style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.85rem; font-size: 0.95rem; font-weight: 700; color: var(--primary);">
@@ -150,29 +144,33 @@
     </div>
   </footer>
 
-  <!-- Scripts Javascript Modularizados com Cache Busting -->
-  <script src="js/braille-data.js?v=1.2.0"></script>
-  <script src="js/audio-tts.js?v=1.2.0"></script>
-  <script src="js/teacher-mode.js?v=1.2.0"></script>
+  <!-- Scripts Javascript Modularizados -->
+  <script src="js/braille-data.js?v=1.3.0"></script>
+  <script src="js/word-manager.js?v=1.3.0"></script>
+  <script src="js/audio-tts.js?v=1.3.0"></script>
+  <script src="js/teacher-mode.js?v=1.3.0"></script>
+  <script src="js/championship.js?v=1.3.0"></script>
 
   <!-- Jogos Ponto a Ponto com Célula em Branco -->
-  <script src="js/games/hangman-builder.js?v=1.2.0"></script>
-  <script src="js/games/wordsearch-builder.js?v=1.2.0"></script>
+  <script src="js/games/hangman-builder.js?v=1.3.0"></script>
+  <script src="js/games/wordsearch-builder.js?v=1.3.0"></script>
 
   <!-- Demais Jogos -->
-  <script src="js/games/hangman.js?v=1.2.0"></script>
-  <script src="js/games/wordsearch.js?v=1.2.0"></script>
-  <script src="js/games/crosswords.js?v=1.2.0"></script>
-  <script src="js/games/syllables-crossword.js?v=1.2.0"></script>
-  <script src="js/games/math-crossword.js?v=1.2.0"></script>
-  <script src="js/games/sudoku.js?v=1.2.0"></script>
-  <script src="js/games/memory.js?v=1.2.0"></script>
-  <script src="js/games/bingo.js?v=1.2.0"></script>
-  <script src="js/games/match-dots.js?v=1.2.0"></script>
-  <script src="js/games/assemble-syllables.js?v=1.2.0"></script>
+  <script src="js/games/hangman.js?v=1.3.0"></script>
+  <script src="js/games/wordsearch.js?v=1.3.0"></script>
+  <script src="js/games/crosswords.js?v=1.3.0"></script>
+  <script src="js/games/syllables-crossword.js?v=1.3.0"></script>
+  <script src="js/games/math-crossword.js?v=1.3.0"></script>
+  <script src="js/games/sudoku.js?v=1.3.0"></script>
+  <script src="js/games/memory.js?v=1.3.0"></script>
+  <script src="js/games/bingo.js?v=1.3.0"></script>
+  <script src="js/games/match-dots.js?v=1.3.0"></script>
+  <script src="js/games/assemble-syllables.js?v=1.3.0"></script>
 
   <!-- Feed e Controlador Global -->
-  <script src="js/feed.js?v=1.2.0"></script>
-  <script src="js/app.js?v=1.2.0"></script>
+  <script src="js/feed.js?v=1.3.0"></script>
+  <script src="js/app.js?v=1.3.0"></script>
+</body>
+</html>
 </body>
 </html>

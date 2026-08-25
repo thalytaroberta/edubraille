@@ -14,8 +14,11 @@ const HangmanGame = (() => {
     guessedLetters.clear();
     errors = 0;
 
-    const db = GAME_DATABASES.words[level] || GAME_DATABASES.words.iniciante;
-    const item = db[Math.floor(Math.random() * db.length)];
+    const theme = window.GameFeed ? window.GameFeed.getActiveCategoryTheme() : 'aleatorio';
+    const item = window.WordManager
+      ? window.WordManager.getRandomWord(theme, level)
+      : { word: 'BRAILLE', hint: 'Sistema de escrita tátil' };
+
     secretWord = item.word;
     wordHint = item.hint;
 
@@ -45,6 +48,9 @@ const HangmanGame = (() => {
     if (checkWin()) {
       AudioEngine.playWin();
       TeacherMode.recordGameResult('Jogo da Forca', true, `Palavra: ${secretWord}`);
+      if (window.Championship) {
+        window.Championship.recordMatchResult('Jogo da Forca', true, secretWord.length, secretWord.length);
+      }
       setTimeout(() => {
         AudioEngine.speak(`Vitória espetacular! Você adivinhou a palavra ${secretWord}! Vou soletrar para você.`);
         spellWord(secretWord);
@@ -52,6 +58,10 @@ const HangmanGame = (() => {
     } else if (errors >= maxErrors) {
       AudioEngine.playError();
       TeacherMode.recordGameResult('Jogo da Forca', false, `Palavra era: ${secretWord}`);
+      if (window.Championship) {
+        const correctCount = secretWord.split('').filter(c => guessedLetters.has(c)).length;
+        window.Championship.recordMatchResult('Jogo da Forca', false, correctCount, secretWord.length);
+      }
       setTimeout(() => {
         AudioEngine.speak(`Fim de jogo! Você atingiu 6 erros. A palavra correta era ${secretWord}.`);
         spellWord(secretWord);
