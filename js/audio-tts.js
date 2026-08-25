@@ -218,12 +218,21 @@ const AudioEngine = (() => {
 
       case 'championship':
       case 'championship-section':
-        announcement = 'Você está na arena do Campeonato EduBraille. No topo da tela encontra-se o perfil do aluno e o progresso nos níveis progressivos: Fácil, Médio, Difícil e Insano. No centro da tela encontram-se os jogos do campeonato com nivelamento automático. Na parte inferior está o ranking geral com medalhas, pódio e pontuação dos alunos.';
+        if (window.Championship && window.Championship.isLoggedIn()) {
+          const st = window.Championship.getActiveStudent();
+          announcement = `Olá, ${st ? st.nickname : ""}. Você está na sua trajetória no Campeonato EduBraille. Seu nível atual é ${st ? st.currentLevel : "Fácil"}. Sua pontuação é de ${st ? st.score : 0} pontos. No centro da tela está o botão Iniciar agora sua trajetória. Abaixo estão as opções de navegação. No canto superior direito está a opção para sair ou trocar de aluno.`;
+        } else {
+          announcement = 'Você está na página do Campeonato EduBraille. Selecione seu perfil cadastrado ou crie um novo cadastro para iniciar sua trajetória.';
+        }
+        break;
+
+      case 'game-selection':
+        announcement = 'Você está na página de escolha de jogos. A dificuldade não precisa ser escolhida. Ela é definida automaticamente pelo seu nível atual. Escolha um dos jogos disponíveis para começar.';
         break;
 
       case 'game-section':
       case 'game':
-        announcement = 'Você está na tela de jogo ativo. No topo da tela encontra-se o botão para voltar ao catálogo. No centro encontra-se a área principal do jogo, compatível com teclado convencional e teclado adaptado para Braille com pontos de 1 a 6. No lado direito ou inferior encontra-se o painel com a resposta e o padrão Braille de cada letra.';
+        announcement = 'Você está na tela de jogo ativo. No topo da tela encontra-se o botão para voltar para sua trajetória. No centro encontra-se a área principal do jogo, compatível com teclado convencional e teclado adaptado para Braille. No lado direito ou inferior encontra-se o painel do professor.';
         break;
 
       case 'reference-section':

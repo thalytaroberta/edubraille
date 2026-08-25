@@ -66,6 +66,9 @@ const MemoryGame = (() => {
         if (matchedPairs.size === cards.length / 2) {
           AudioEngine.playWin();
           TeacherMode.recordGameResult('Jogo da Memória', true, `${moves} jogadas`);
+          if (window.Championship) {
+            window.Championship.recordMatchResult('Jogo da Memória', true, matchedPairs.size, cards.length / 2);
+          }
           setTimeout(() => {
             AudioEngine.speak(`Parabéns! Você encontrou todos os ${matchedPairs.size} pares em apenas ${moves} jogadas!`);
           }, 600);

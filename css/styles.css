@@ -1877,3 +1877,363 @@ body {
   margin-bottom: 0.5rem;
 }
 
+/* ==========================================================================
+   NOVOS ESTILOS DO CAMPEONATO V2 — MINHA TRAJETÓRIA E MULTIPERFIL
+   ========================================================================== */
+.championship-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 1.5rem;
+}
+
+.user-profile-menu-wrap {
+  position: relative;
+}
+
+.btn-user-profile {
+  background: var(--bg-main);
+  border: 2px solid var(--primary);
+  color: var(--text-color);
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-full);
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.btn-user-profile:hover {
+  background: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+.user-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 1000;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  min-width: 230px;
+  overflow: hidden;
+}
+
+.dropdown-item {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 0.85rem 1.2rem;
+  font-weight: 700;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.dropdown-item:hover {
+  background: var(--bg-main);
+  color: var(--primary);
+}
+.dropdown-divider {
+  height: 1px;
+  background: var(--border-color);
+}
+.btn-logout-item {
+  color: var(--danger, #e63946);
+}
+
+/* Tela QUEM VAI JOGAR? */
+.who-is-playing-container {
+  max-width: 750px;
+  margin: 2rem auto;
+}
+.wip-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-lg);
+}
+.wip-header { text-align: center; margin-bottom: 2rem; }
+.wip-icon { font-size: 3.5rem; display: block; margin-bottom: 0.5rem; }
+
+.saved-profiles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.profile-card-btn {
+  background: var(--bg-main);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+.profile-card-btn:hover {
+  border-color: var(--primary);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.p-avatar { font-size: 2.2rem; }
+.p-nick { font-weight: 800; font-size: 1.1rem; }
+.p-school { font-size: 0.85rem; color: var(--text-muted); text-align: center; }
+.p-badge { background: var(--primary-light); color: var(--primary-text); padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem; font-weight: 700; }
+.p-score { font-weight: 800; color: #f59e0b; margin-top: 0.2rem; }
+
+.wip-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 2rem 0;
+}
+.wip-divider::before, .wip-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 2px dashed var(--border-color);
+}
+.wip-divider span {
+  padding: 0 1rem;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+/* MINHA TRAJETÓRIA */
+.my-trajectory-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.trajectory-hero-card {
+  background: linear-gradient(135deg, var(--primary-light), var(--bg-card));
+  border: 3px solid var(--primary);
+  border-radius: var(--radius-lg);
+  padding: 2.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+
+.hero-header-text h2 {
+  font-size: 2.2rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+}
+
+.student-stats-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.stat-box {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.stat-lbl { font-size: 0.9rem; font-weight: 700; color: var(--text-muted); }
+.stat-val { font-size: 1.4rem; font-weight: 900; }
+.level-highlight { color: var(--primary); }
+.score-highlight { color: #f59e0b; }
+.next-highlight { color: #8b5cf6; }
+
+.btn-giant-launch {
+  font-size: 1.4rem !important;
+  padding: 1.25rem 3rem !important;
+  border-radius: 50px !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-giant-launch:hover {
+  transform: scale(1.05);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+}
+
+/* Timeline do Progresso */
+.trajectory-progress-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  text-align: center;
+}
+
+.level-timeline-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.timeline-step-item {
+  background: var(--bg-main);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem 1.75rem;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+.timeline-step-item.step-unlocked { border-color: #10b981; background: #ecfdf5; }
+.timeline-step-item.step-current { border-color: var(--primary); border-width: 3px; background: var(--primary-light); transform: scale(1.08); }
+.timeline-step-item.step-locked { opacity: 0.6; }
+
+.step-icon-circle { font-size: 2rem; }
+.step-title { font-weight: 900; }
+.step-status { font-size: 0.85rem; font-weight: 700; }
+.timeline-arrow { font-size: 1.8rem; font-weight: 900; color: var(--text-muted); }
+
+.level-progress-bar-wrap {
+  width: 100%;
+  height: 20px;
+  background: var(--bg-main);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid var(--border-color);
+}
+.level-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary), #10b981);
+  transition: width 0.5s ease-in-out;
+}
+.pct-target-label { margin-top: 0.75rem; font-size: 1.05rem; }
+
+.trajectory-navigation-options {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.btn-nav-opt {
+  padding: 0.9rem 1.75rem !important;
+  font-weight: 800 !important;
+}
+
+/* Escolha de Jogo Limpa (Sem seleção de dificuldade) */
+.game-selection-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.gs-header-banner {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.champ-games-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+.championship-game-select-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: border-color 0.2s;
+}
+.championship-game-select-card:hover {
+  border-color: var(--primary);
+}
+.cg-icon { font-size: 2.5rem; }
+.cg-info h4 { font-size: 1.25rem; font-weight: 900; margin-bottom: 0.35rem; }
+.btn-play-champ {
+  width: 100%;
+  font-size: 1.1rem !important;
+  font-weight: 900 !important;
+  padding: 0.85rem !important;
+}
+
+/* Modais de Resultado e Conquistas */
+.match-result-modal-content {
+  text-align: center;
+  max-width: 520px;
+}
+.match-metrics-card {
+  background: var(--bg-main);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin: 1.25rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.metric-row { display: flex; justify-content: space-between; font-size: 1.05rem; }
+.level-up-celebration-box {
+  background: #ecfdf5;
+  border: 2px solid #10b981;
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  color: #065f46;
+}
+
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+.achievement-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.achievement-card.unlocked { border-color: #10b981; background: #f0fdf4; }
+.achievement-card.locked { opacity: 0.6; }
+.ach-name { font-weight: 900; font-size: 1.1rem; }
+.ach-desc { font-size: 0.9rem; color: var(--text-muted); }
+.ach-badge-tag { font-size: 0.75rem; font-weight: 800; align-self: flex-start; padding: 0.2rem 0.5rem; border-radius: 6px; background: var(--border-color); }
+.achievement-card.unlocked .ach-badge-tag { background: #10b981; color: #fff; }
+
+/* Banner do Jogo Ativo */
+.active-game-banner {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.agb-center { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.agb-pill { background: var(--bg-main); border: 1px solid var(--border-color); padding: 0.3rem 0.75rem; border-radius: 20px; font-size: 0.9rem; }
+
+

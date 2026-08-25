@@ -76,12 +76,19 @@ const HangmanBuilderGame = (() => {
     if (checkWin()) {
       AudioEngine.playWin();
       TeacherMode.recordGameResult('Forca Ponto a Ponto', true, `Palavra: ${secretWord}`);
+      if (window.Championship) {
+        window.Championship.recordMatchResult('Forca Ponto a Ponto', true, secretWord.length, secretWord.length);
+      }
       setTimeout(() => {
         AudioEngine.speak(`Vitória espetacular! Você montou e adivinhou a palavra ${secretWord} ponto a ponto!`);
       }, 500);
     } else if (errors >= maxErrors) {
       AudioEngine.playError();
       TeacherMode.recordGameResult('Forca Ponto a Ponto', false, `Palavra era: ${secretWord}`);
+      if (window.Championship) {
+        const correctCount = secretWord.split('').filter(c => guessedLetters.has(c)).length;
+        window.Championship.recordMatchResult('Forca Ponto a Ponto', false, correctCount, secretWord.length);
+      }
       setTimeout(() => {
         AudioEngine.speak(`Fim de jogo! A palavra secreta era ${secretWord}.`);
       }, 500);

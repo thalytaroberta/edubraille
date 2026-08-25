@@ -327,20 +327,44 @@ const TeacherMode = (() => {
               <div class="form-group" style="margin-bottom: 1.25rem;">
                 <label for="aee-select-level"><strong>2. Selecionar o Nível de Dificuldade:</strong></label>
                 <select id="aee-select-level" class="form-control" style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid var(--border-color);" aria-label="Selecionar nível de dificuldade">
-                  <option value="iniciante">🟢 Fácil (Iniciante - Palavras curtas)</option>
-                  <option value="intermediario">🟡 Médio (Intermediário - Palavras médias)</option>
-                  <option value="avancado">🔴 Difícil (Avançado - Palavras longas)</option>
+                  <option value="iniciante">🟢 Fácil (Iniciante)</option>
+                  <option value="intermediario">🟡 Médio (Intermediário)</option>
+                  <option value="avancado">🟠 Difícil (Avançado)</option>
+                  <option value="insano">🔴 Insano (Desafio Máximo)</option>
                 </select>
               </div>
 
               <div class="form-group" style="margin-bottom: 1.25rem;">
                 <label for="aee-select-theme"><strong>3. Selecionar o Tema / Conteúdo Curricular:</strong></label>
                 <select id="aee-select-theme" class="form-control" style="width: 100%; padding: 0.65rem; border-radius: 8px; border: 1px solid var(--border-color);" aria-label="Selecionar tema de conteúdo">
-                  <option value="aleatorio">🎲 Aleatório / Diversos</option>
-                  <option value="musica">🎵 Música</option>
-                  <option value="geografia">🌍 Geografia</option>
-                  <option value="internet">🌐 Internet</option>
-                  <option value="animais">🐾 Animais</option>
+                  <option value="aleatorio">🎲 Aleatório / Misturar Todos</option>
+                  <option value="games">🎮 Games & Videogames</option>
+                  <option value="internet">🌐 Internet & Cultura Digital</option>
+                  <option value="musica">🎵 Música & Instrumentos</option>
+                  <option value="filmes">🎬 Filmes, Séries & Animações</option>
+                  <option value="anime">🍥 Anime, Mangá & Cultura Pop</option>
+                  <option value="fantasia">🧙 Fantasia & Aventura</option>
+                  <option value="misterio">🕵️ Mistério & Investigação</option>
+                  <option value="esportes">🏆 Esportes & Atletismo</option>
+                  <option value="animais">🐶 Animais & Natureza</option>
+                  <option value="ciencia">🔬 Ciência & Experimentos</option>
+                  <option value="espaco">🚀 Espaço & Sistema Solar</option>
+                  <option value="tecnologia">🤖 Tecnologia & Robótica</option>
+                  <option value="brasil">🇧🇷 Brasil, Biomas & Folclore</option>
+                  <option value="mundo">🌎 Mundo, Países & Bandeiras</option>
+                  <option value="historia">🏛️ História & Civilizações</option>
+                  <option value="geografia">🗺️ Geografia & Mapas</option>
+                  <option value="arte">🎨 Arte & Criatividade</option>
+                  <option value="moda">👟 Moda & Estilo Urbano</option>
+                  <option value="comida">🍕 Comida & Gastronomia</option>
+                  <option value="natureza">🌱 Natureza & Meio Ambiente</option>
+                  <option value="profissoes">👩‍🚀 Profissões & Futuro</option>
+                  <option value="vidareal">💡 Vida Real & Cidadania</option>
+                  <option value="curiosidades">🤯 Curiosidades Fatos Incríveis</option>
+                  <option value="desafios">🧠 Desafios Mentais & Lógica</option>
+                  <option value="emojis">😎 Emojis & Desafios Visuais</option>
+                  <option value="palavras">🔤 Palavras & Linguagem</option>
+                  <option value="libras">🤟 Libras, Braille & Acessibilidade</option>
                   <option value="desenhos">🎬 Desenhos Animados</option>
                 </select>
               </div>

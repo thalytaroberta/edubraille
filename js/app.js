@@ -10,6 +10,7 @@ const App = (() => {
   let currentLevel = 'iniciante';
   let currentThemeCategory = 'aleatorio';
   let currentThemeIndex = 0;
+  let isChampionshipMode = false;
 
   const THEMES = ['theme-default', 'theme-dark', 'theme-high-contrast-yellow', 'theme-high-contrast-cyan'];
   const THEME_NAMES = ['Claro Padrão', 'Escuro', 'Alto Contraste Amarelo', 'Alto Contraste Ciano'];
@@ -43,6 +44,7 @@ const App = (() => {
 
   function returnToFeed(announce = true) {
     currentGameId = null;
+    isChampionshipMode = false;
     hideAllSections();
 
     const feedSection = document.getElementById('feed-section');
@@ -65,6 +67,7 @@ const App = (() => {
 
   function showChampionshipView() {
     currentGameId = null;
+    isChampionshipMode = false;
     hideAllSections();
 
     const champSection = document.getElementById('championship-section');
@@ -82,6 +85,7 @@ const App = (() => {
 
   function showAEETeacherDashboard() {
     currentGameId = null;
+    isChampionshipMode = false;
     hideAllSections();
 
     const teacherSection = document.getElementById('teacher-aee-section');
@@ -99,6 +103,7 @@ const App = (() => {
 
   function showReferenceChart() {
     currentGameId = null;
+    isChampionshipMode = false;
     hideAllSections();
 
     const refSection = document.getElementById('reference-section');
@@ -122,10 +127,17 @@ const App = (() => {
     if (level) currentLevel = level;
     if (themeCategory) currentThemeCategory = themeCategory;
 
+    // Detecta se a partida está rodando sob a categoria Campeonato
+    isChampionshipMode = Championship.isLoggedIn() && document.getElementById('championship-section').style.display !== 'none';
+
     hideAllSections();
 
     const gameSection = document.getElementById('game-section');
     if (gameSection) gameSection.style.display = 'block';
+
+    // Injeta a barra de navegação/status do jogo (Com suporte ao botão VOLTAR PARA MINHA TRAJETÓRIA)
+    renderActiveGameHeader(gameInfo);
+
     gameSection.scrollIntoView({ behavior: 'smooth' });
 
     if (gameInfo.module && gameInfo.module.init) {
@@ -134,6 +146,44 @@ const App = (() => {
 
     AudioEngine.playClick();
     AudioEngine.announceSection('game-section');
+  }
+
+  function renderActiveGameHeader(gameInfo) {
+    const headerContainer = document.getElementById('game-section-header');
+    if (!headerContainer) return;
+
+    const student = Championship.getActiveStudent();
+
+    if (student) {
+      headerContainer.innerHTML = `
+        <div class="active-game-banner championship-game-banner">
+          <div class="agb-left">
+            <button type="button" class="btn btn-secondary" onclick="Championship.openModalConfirmExitGame()" aria-label="Voltar para Minha Trajetória">
+              ← VOLTAR PARA MINHA TRAJETÓRIA
+            </button>
+          </div>
+          <div class="agb-center">
+            <h3>🎮 ${gameInfo.name.toUpperCase()}</h3>
+            <span class="agb-pill">Nível atual: <strong>${student.currentLevel.toUpperCase()}</strong></span>
+            <span class="agb-pill">Tema: <strong>Surpresa! 🎁</strong></span>
+          </div>
+          <div class="agb-right">
+            <span class="student-tag">👤 ${student.nickname}</span>
+          </div>
+        </div>
+      `;
+    } else {
+      headerContainer.innerHTML = `
+        <div class="active-game-banner standard-game-banner">
+          <button type="button" class="btn btn-secondary" onclick="App.returnToFeed()" aria-label="Voltar para o Feed de Jogos">
+            ⬅ Voltar ao Feed de Jogos (Alt + F)
+          </button>
+          <div class="agb-center">
+            <h3>🎮 ${gameInfo.name}</h3>
+          </div>
+        </div>
+      `;
+    }
   }
 
   function getCurrentLevel() {
@@ -205,7 +255,13 @@ const App = (() => {
 
       if (e.key === 'Escape') {
         closeAllModals();
-        if (currentGameId) returnToFeed();
+        if (currentGameId) {
+          if (Championship.isLoggedIn()) {
+            Championship.openModalConfirmExitGame();
+          } else {
+            returnToFeed();
+          }
+        }
       }
     });
   }
