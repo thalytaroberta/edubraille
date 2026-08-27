@@ -1,0 +1,9 @@
+/* Cursor personalizado de grande porte com alto contraste */
+* {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='75' height='75' viewBox='0 0 75 75'><path d='M2 2 L2 65 L22 45 L38 72 L50 66 L34 40 L60 40 Z' fill='%23FFFF00' stroke='%23000000' stroke-width='4'/></svg>"), auto !important;
+}
+
+/* Remoção de todos os efeitos de degradê do site */
+*, *::before, *::after {
+  background-image: none !important;
+}
