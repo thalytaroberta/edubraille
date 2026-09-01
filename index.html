@@ -78,8 +78,11 @@
 
     <!-- Seção 1: Feed de Jogos -->
     <section id="feed-section" role="region" aria-label="Feed de Jogos">
-      <!-- Destaque do Campeonato na Página Inicial -->
+      <!-- Destaque do Campeonato na Página Inicial (Sua Trajetória) -->
       <div id="home-ranking-banner-container" style="margin-bottom: 1.5rem;"></div>
+
+      <!-- Caixa de Dúvidas sobre Braille (Posicionada abaixo da Trajetória e acima dos Jogos) -->
+      <div id="braille-qa-container" style="margin-bottom: 1.75rem;"></div>
 
       <div id="game-feed-container"></div>
     </section>
@@ -117,6 +120,7 @@
   <div id="modal-confirm-exit-game-container"></div>
   <div id="modal-confirm-logout-container"></div>
   <div id="modal-match-result-container"></div>
+  <div id="modal-sinistro-container"></div>
 
   <!-- Modal de Ajuda de Acessibilidade -->
   <div id="modal-help" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-help-title" aria-hidden="true">
@@ -178,30 +182,31 @@
   </footer>
 
   <!-- Scripts Javascript Modularizados -->
-  <script src="js/braille-data.js?v=2.0.0"></script>
-  <script src="js/word-manager.js?v=2.0.0"></script>
-  <script src="js/audio-tts.js?v=2.0.0"></script>
-  <script src="js/teacher-mode.js?v=2.0.0"></script>
-  <script src="js/championship.js?v=2.0.0"></script>
+  <script src="js/braille-data.js?v=2.1.0"></script>
+  <script src="js/word-manager.js?v=2.1.0"></script>
+  <script src="js/audio-tts.js?v=2.1.0"></script>
+  <script src="js/braille-assistant.js?v=2.1.0"></script>
+  <script src="js/teacher-mode.js?v=2.1.0"></script>
+  <script src="js/championship.js?v=2.1.0"></script>
 
   <!-- Jogos Ponto a Ponto com Célula em Branco -->
-  <script src="js/games/hangman-builder.js?v=2.0.0"></script>
-  <script src="js/games/wordsearch-builder.js?v=2.0.0"></script>
+  <script src="js/games/hangman-builder.js?v=2.1.0"></script>
+  <script src="js/games/wordsearch-builder.js?v=2.1.0"></script>
 
   <!-- Demais Jogos -->
-  <script src="js/games/hangman.js?v=2.0.0"></script>
-  <script src="js/games/wordsearch.js?v=2.0.0"></script>
-  <script src="js/games/crosswords.js?v=2.0.0"></script>
-  <script src="js/games/syllables-crossword.js?v=2.0.0"></script>
-  <script src="js/games/math-crossword.js?v=2.0.0"></script>
-  <script src="js/games/sudoku.js?v=2.0.0"></script>
-  <script src="js/games/memory.js?v=2.0.0"></script>
-  <script src="js/games/bingo.js?v=2.0.0"></script>
-  <script src="js/games/match-dots.js?v=2.0.0"></script>
-  <script src="js/games/assemble-syllables.js?v=2.0.0"></script>
+  <script src="js/games/hangman.js?v=2.1.0"></script>
+  <script src="js/games/wordsearch.js?v=2.1.0"></script>
+  <script src="js/games/crosswords.js?v=2.1.0"></script>
+  <script src="js/games/syllables-crossword.js?v=2.1.0"></script>
+  <script src="js/games/math-crossword.js?v=2.1.0"></script>
+  <script src="js/games/sudoku.js?v=2.1.0"></script>
+  <script src="js/games/memory.js?v=2.1.0"></script>
+  <script src="js/games/bingo.js?v=2.1.0"></script>
+  <script src="js/games/match-dots.js?v=2.1.0"></script>
+  <script src="js/games/assemble-syllables.js?v=2.1.0"></script>
 
   <!-- Feed e Controlador Global -->
-  <script src="js/feed.js?v=2.0.0"></script>
-  <script src="js/app.js?v=2.0.0"></script>
+  <script src="js/feed.js?v=2.1.0"></script>
+  <script src="js/app.js?v=2.1.0"></script>
 </body>
 </html>

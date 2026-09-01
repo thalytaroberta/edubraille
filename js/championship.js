@@ -225,18 +225,29 @@ const Championship = (() => {
   }
 
   // ---------------------------------------------------------------
-  // REGISTRO DE RESULTADOS & EVOLUÇÃO
+  // REGISTRO DE RESULTADOS & EVOLUÇÃO DINÂMICA
+  // REGRA: ACERTO = SOBE DE NÍVEL | ERRO = VOLTA PARA O NÍVEL ANTERIOR
+  // NÍVEL INSANO: 2 ACERTOS CONSECUTIVOS = "VOCÊ É SINISTRO NO BRAILLE!"
   // ---------------------------------------------------------------
+  const DYNAMIC_LEVEL_ORDER = ['fácil', 'médio', 'difícil', 'insano'];
+
   function recordMatchResult(gameName, won, correctItems = 1, totalItems = 1, responseTimeSec = 20) {
     const student = getActiveStudent();
     if (!student) return 0;
 
     student.gamesPlayed++;
+    student.hits = student.hits || 0;
+    student.errors = student.errors || 0;
+    student.insanoConsecutiveWins = student.insanoConsecutiveWins || 0;
+
+    const previousLevel = student.currentLevel;
     const mult = LEVEL_MULTIPLIERS[student.currentLevel] || 1.0;
     let matchScore = 0;
+    let levelChangeType = 'same'; // 'up' | 'down' | 'same' | 'sinistro'
 
     if (won) {
       student.victories++;
+      student.hits++;
       student.currentStreak++;
       if (student.currentStreak > student.highestStreak) {
         student.highestStreak = student.currentStreak;
@@ -250,24 +261,42 @@ const Championship = (() => {
       matchScore = Math.round((basePoints + accuracyBonus + streakBonus + speedBonus) * mult);
       student.score += matchScore;
 
-      // Conquista: Primeira Vitória
+      // Evolução Dinâmica: Sobe de Nível
+      const currentIdx = DYNAMIC_LEVEL_ORDER.indexOf(student.currentLevel);
+      if (student.currentLevel === 'insano') {
+        student.insanoConsecutiveWins++;
+        if (student.insanoConsecutiveWins >= 2) {
+          levelChangeType = 'sinistro';
+          checkAndGrantAchievement(student, 'mind_master');
+        }
+      } else if (currentIdx < DYNAMIC_LEVEL_ORDER.length - 1) {
+        const nextLvl = DYNAMIC_LEVEL_ORDER[currentIdx + 1];
+        student.currentLevel = nextLvl;
+        if (!student.unlockedLevels.includes(nextLvl)) {
+          student.unlockedLevels.push(nextLvl);
+        }
+        levelChangeType = 'up';
+        checkAndGrantAchievement(student, 'level_up');
+      }
+
+      // Conquistas
       checkAndGrantAchievement(student, 'first_win');
-      // Conquista: Sequência de Fogo
-      if (student.currentStreak >= 3) {
-        checkAndGrantAchievement(student, 'fire_streak');
-      }
-      // Conquista: Mente Brilhante
-      if (student.currentLevel === 'difícil' || student.currentLevel === 'insano') {
-        checkAndGrantAchievement(student, 'mind_master');
-      }
-      // Conquista: Precisão Total
-      if (correctItems === totalItems && totalItems > 0) {
-        checkAndGrantAchievement(student, 'precision');
-      }
+      if (student.currentStreak >= 3) checkAndGrantAchievement(student, 'fire_streak');
+      if (student.currentLevel === 'difícil' || student.currentLevel === 'insano') checkAndGrantAchievement(student, 'mind_master');
+      if (correctItems === totalItems && totalItems > 0) checkAndGrantAchievement(student, 'precision');
     } else {
+      student.errors++;
       student.currentStreak = 0;
+      student.insanoConsecutiveWins = 0;
       matchScore = Math.round(40 * mult);
       student.score += matchScore;
+
+      // Queda Dinâmica: Volta para o Nível Anterior
+      const currentIdx = DYNAMIC_LEVEL_ORDER.indexOf(student.currentLevel);
+      if (currentIdx > 0) {
+        student.currentLevel = DYNAMIC_LEVEL_ORDER[currentIdx - 1];
+        levelChangeType = 'down';
+      }
     }
 
     // Registra no histórico
@@ -276,43 +305,38 @@ const Championship = (() => {
       won,
       score: matchScore,
       level: student.currentLevel,
+      previousLevel,
       date: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     });
     if (student.history.length > 15) student.history.pop();
 
-    // Checa evolução de nível
-    const levelUnlockedName = checkLevelProgression(student);
-
     saveAllProfiles();
 
-    // Exibe o Modal de Resultado Celebrativo
-    showMatchResultModal({
-      gameName,
-      won,
-      matchScore,
-      totalScore: student.score,
-      correctItems,
-      totalItems,
-      levelUnlockedName
-    });
+    // Se alcançou 2 acertos consecutivos no nível Insano, abre a comemoração especial
+    if (levelChangeType === 'sinistro') {
+      showSinistroCelebrationModal({
+        gameName,
+        matchScore,
+        totalScore: student.score,
+        correctItems,
+        totalItems
+      });
+    } else {
+      // Exibe o Modal de Resultado com a indicação dinâmica de nível
+      showMatchResultModal({
+        gameName,
+        won,
+        matchScore,
+        totalScore: student.score,
+        correctItems,
+        totalItems,
+        previousLevel,
+        currentLevel: student.currentLevel,
+        levelChangeType
+      });
+    }
 
     return matchScore;
-  }
-
-  function checkLevelProgression(student) {
-    const req = LEVEL_REQUIREMENTS[student.currentLevel];
-    if (!req || !req.next) return null;
-
-    if (student.score >= req.minScore || student.victories >= req.minWins) {
-      const newLevel = req.next;
-      if (!student.unlockedLevels.includes(newLevel)) {
-        student.unlockedLevels.push(newLevel);
-      }
-      student.currentLevel = newLevel;
-      checkAndGrantAchievement(student, 'level_up');
-      return newLevel;
-    }
-    return null;
   }
 
   function checkAndGrantAchievement(student, achId) {
@@ -890,23 +914,63 @@ const Championship = (() => {
   }
 
   // ---------------------------------------------------------------
-  // MODAIS: RESULTADO DA PARTIDA & CONFIRMAÇÃO DE SAÍDA
+  // MODAIS: RESULTADO DA PARTIDA, COMEMORAÇÃO SINISTRO & CONFIRMAÇÕES
   // ---------------------------------------------------------------
+  let _animationsEnabled = true;
+
+  function isAnimationsEnabled() {
+    try {
+      const stored = localStorage.getItem('edubraille_animations_enabled');
+      if (stored !== null) return stored === 'true';
+    } catch (e) {}
+    return true;
+  }
+
+  function toggleAnimations() {
+    _animationsEnabled = !isAnimationsEnabled();
+    try {
+      localStorage.setItem('edubraille_animations_enabled', _animationsEnabled ? 'true' : 'false');
+    } catch (e) {}
+    if (typeof AudioEngine !== 'undefined') {
+      AudioEngine.speak(_animationsEnabled ? 'Animações visuais ativadas.' : 'Animações visuais desativadas para acessibilidade.');
+    }
+    const toggleBtn = document.getElementById('btn-toggle-anim-sinistro');
+    if (toggleBtn) {
+      toggleBtn.innerText = _animationsEnabled ? '🎬 Animações: Ativadas' : '⏸️ Animações: Desativadas';
+    }
+    const animWrap = document.querySelector('.sinistro-braille-avatar-wrap');
+    if (animWrap) {
+      animWrap.classList.toggle('anim-disabled', !_animationsEnabled);
+    }
+  }
+
   function showMatchResultModal(result) {
     const student = getActiveStudent();
     if (!student) return;
 
-    const pct = getLevelProgressPct(student);
-
     const modalContainer = document.getElementById('modal-match-result-container');
     if (!modalContainer) return;
 
-    let unlockHTML = '';
-    if (result.levelUnlockedName) {
-      unlockHTML = `
-        <div class="level-up-celebration-box">
-          <h3>🚀 NOVO NÍVEL DESBLOQUEADO!</h3>
-          <p>Parabéns! Você avançou e chegou ao nível <strong>${LEVEL_NAMES[result.levelUnlockedName]}</strong>!</p>
+    let dynamicFeedbackHTML = '';
+    if (result.levelChangeType === 'up') {
+      dynamicFeedbackHTML = `
+        <div class="level-up-celebration-box" role="status">
+          <h3>🚀 ACERTOU! VOCÊ SUBIU DE NÍVEL!</h3>
+          <p>Excelente! Seu nível avançou para <strong>${LEVEL_NAMES[result.currentLevel]}</strong>.</p>
+        </div>
+      `;
+    } else if (result.levelChangeType === 'down') {
+      dynamicFeedbackHTML = `
+        <div class="level-down-alert-box" role="status">
+          <h3>⚠️ ERRO! NÍVEL REAJUSTADO</h3>
+          <p>Não desanime! Seu nível retornou para <strong>${LEVEL_NAMES[result.currentLevel]}</strong> para reforçar seu aprendizado.</p>
+        </div>
+      `;
+    } else {
+      dynamicFeedbackHTML = `
+        <div class="level-same-box" role="status">
+          <h3>🎯 PARTIDA REGISTRADA</h3>
+          <p>Você continua no nível <strong>${LEVEL_NAMES[result.currentLevel]}</strong>.</p>
         </div>
       `;
     }
@@ -914,17 +978,19 @@ const Championship = (() => {
     modalContainer.innerHTML = `
       <div class="modal show" role="dialog" aria-modal="true" aria-labelledby="match-result-title">
         <div class="modal-content match-result-modal-content">
-          <h2 id="match-result-title">🎉 PARTIDA CONCLUÍDA!</h2>
+          <h2 id="match-result-title">🎉 RESULTADO DA PARTIDA</h2>
           <p class="game-played-name">Jogo: <strong>${result.gameName}</strong></p>
 
           <div class="match-metrics-card">
-            <p>Você acertou <strong>${result.correctItems} de ${result.totalItems}</strong>!</p>
-            <div class="metric-row"><span>⭐ Pontuação conquistada:</span><strong>+${result.matchScore} pts</strong></div>
-            <div class="metric-row"><span>🏆 Pontuação total:</span><strong>${result.totalScore.toLocaleString('pt-BR')} pts</strong></div>
-            <div class="metric-row"><span>📈 Progresso para o próximo nível:</span><strong>${pct}%</strong></div>
+            <p>Você acertou <strong>${result.correctItems} de ${result.totalItems}</strong> itens desta rodada!</p>
+            <div class="metric-row"><span>⭐ Pontos na partida:</span><strong>+${result.matchScore} pts</strong></div>
+            <div class="metric-row"><span>🏆 Pontuação geral:</span><strong>${result.totalScore.toLocaleString('pt-BR')} pts</strong></div>
+            <div class="metric-row"><span>✅ Total de Acertos:</span><strong>${student.hits || 0}</strong></div>
+            <div class="metric-row"><span>❌ Total de Erros:</span><strong>${student.errors || 0}</strong></div>
+            <div class="metric-row"><span>🎯 Nível Atual:</span><strong>${LEVEL_NAMES[student.currentLevel]}</strong></div>
           </div>
 
-          ${unlockHTML}
+          ${dynamicFeedbackHTML}
 
           <div class="match-result-actions">
             <button type="button" class="btn btn-primary" onclick="Championship.closeMatchResultModal(); Championship.launchGameFromTrajectory('${currentActiveGameId || "hangman"}')">
@@ -942,12 +1008,134 @@ const Championship = (() => {
     `;
 
     if (typeof AudioEngine !== 'undefined') {
-      AudioEngine.playWin();
+      if (result.won) {
+        AudioEngine.playWin();
+        if (result.levelChangeType === 'up') {
+          setTimeout(() => AudioEngine.speak(`Acertou! Você subiu para o nível ${result.currentLevel}!`), 1000);
+        }
+      } else {
+        AudioEngine.playError();
+        if (result.levelChangeType === 'down') {
+          setTimeout(() => AudioEngine.speak(`Erro. Você retornou para o nível ${result.currentLevel}.`), 1000);
+        }
+      }
     }
   }
 
   function closeMatchResultModal() {
     const modalContainer = document.getElementById('modal-match-result-container');
+    if (modalContainer) modalContainer.innerHTML = '';
+  }
+
+  // ---------------------------------------------------------------
+  // COMEMORAÇÃO ESPECIAL: "VOCÊ É SINISTRO NO BRAILLE!" (2 Acertos no Insano)
+  // ---------------------------------------------------------------
+  function showSinistroCelebrationModal(info) {
+    const student = getActiveStudent();
+    if (!student) return;
+
+    const modalContainer = document.getElementById('modal-sinistro-container');
+    if (!modalContainer) return;
+
+    const animationsActive = isAnimationsEnabled();
+
+    modalContainer.innerHTML = `
+      <div class="modal show modal-sinistro-backdrop" role="dialog" aria-modal="true" aria-labelledby="sinistro-main-title">
+        <div class="modal-content sinistro-modal-content">
+          <div class="sinistro-badge-top">⭐ DESAFIO SUPREMO CONCLUÍDO ⭐</div>
+          <h1 id="sinistro-main-title" class="sinistro-title">VOCÊ É SINISTRO NO BRAILLE!</h1>
+          <p class="sinistro-subtitle">Incrível! Você acertou <strong>dois desafios seguidos</strong> no nível <strong>Insano</strong>!</p>
+
+          <!-- Ilustração com Animação Acessível de Luís Braille de Óculos Escuros Batendo Palmas -->
+          <div class="sinistro-braille-avatar-wrap ${animationsActive ? '' : 'anim-disabled'}" role="img" aria-label="Ilustração divertida de Luís Braille sorrindo, usando óculos escuros estilosos e batendo palmas em comemoração ao seu sucesso no Braille.">
+            <svg class="braille-hero-svg" viewBox="0 0 200 200" width="180" height="180" aria-hidden="true">
+              <!-- Círculo de Fundo -->
+              <circle cx="100" cy="100" r="92" fill="var(--bg-main)" stroke="var(--pe-yellow)" stroke-width="6"/>
+              
+              <!-- Corpo / Traje Histórico -->
+              <path d="M 50 190 C 50 140, 150 140, 150 190 Z" fill="var(--pe-blue)" stroke="var(--text-main)" stroke-width="3"/>
+              <!-- Gola e gravata borboleta -->
+              <polygon points="90,145 100,160 110,145" fill="var(--pe-white)"/>
+              <polygon points="92,150 100,154 108,150 100,165" fill="var(--pe-red)"/>
+
+              <!-- Cabeça / Rosto de Louis Braille -->
+              <ellipse cx="100" cy="95" rx="42" ry="48" fill="#ffdfba" stroke="var(--text-main)" stroke-width="3"/>
+              <!-- Cabelo Castanho Clássico -->
+              <path d="M 60 85 C 55 60, 145 60, 140 85 C 130 55, 70 55, 60 85 Z" fill="#5c3826"/>
+
+              <!-- Óculos Escuros Estilosos -->
+              <g class="sunglasses-group">
+                <rect x="66" y="86" width="30" height="20" rx="6" fill="#111827" stroke="#fbbf24" stroke-width="2"/>
+                <rect x="104" y="86" width="30" height="20" rx="6" fill="#111827" stroke="#fbbf24" stroke-width="2"/>
+                <line x1="96" y1="94" x2="104" y2="94" stroke="#fbbf24" stroke-width="3"/>
+                <!-- Brilho nas lentes -->
+                <line x1="70" y1="90" x2="80" y2="102" stroke="#ffffff" stroke-width="2" opacity="0.85"/>
+                <line x1="108" y1="90" x2="118" y2="102" stroke="#ffffff" stroke-width="2" opacity="0.85"/>
+              </g>
+
+              <!-- Sorriso Confiante -->
+              <path d="M 85 122 Q 100 135 115 122" fill="none" stroke="var(--pe-red)" stroke-width="4" stroke-linecap="round"/>
+
+              <!-- Mãos Batendo Palmas (Animadas via CSS) -->
+              <g class="clapping-hand hand-left">
+                <ellipse cx="48" cy="120" rx="14" ry="12" fill="#ffdfba" stroke="var(--text-main)" stroke-width="3"/>
+                <circle cx="42" cy="115" r="4" fill="var(--pe-yellow)"/>
+              </g>
+              <g class="clapping-hand hand-right">
+                <ellipse cx="152" cy="120" rx="14" ry="12" fill="#ffdfba" stroke="var(--text-main)" stroke-width="3"/>
+                <circle cx="158" cy="115" r="4" fill="var(--pe-yellow)"/>
+              </g>
+
+              <!-- Efeito de Palmas / Estrelas -->
+              <g class="clap-sparks">
+                <text x="30" y="70" font-size="20" fill="var(--pe-yellow)">✨</text>
+                <text x="155" y="70" font-size="20" fill="var(--pe-yellow)">✨</text>
+                <text x="92" y="32" font-size="24" fill="var(--pe-yellow)">👏</text>
+              </g>
+            </svg>
+          </div>
+
+          <div class="sinistro-metrics-card">
+            <p>Pontuação recebida no desafio Insano: <strong>+${info.matchScore} pts</strong></p>
+            <p>Pontuação total acumulada: <strong>${info.totalScore.toLocaleString('pt-BR')} pts</strong></p>
+          </div>
+
+          <div class="sinistro-actions-bar">
+            <button type="button" class="btn btn-primary btn-lg" onclick="Championship.closeSinistroCelebrationModal(); Championship.launchGameFromTrajectory('${currentActiveGameId || "hangman"}')">
+              🎮 CONTINUAR JOGANDO NO INSANO
+            </button>
+            <button type="button" class="btn btn-secondary btn-lg" onclick="Championship.replaySinistroAudio()">
+              🔊 OUVIR COMEMORAÇÃO
+            </button>
+            <button type="button" class="btn btn-secondary btn-lg" onclick="Championship.closeSinistroCelebrationModal(); Championship.setSubView('trajectory')">
+              🏠 VER MINHA TRAJETÓRIA
+            </button>
+          </div>
+
+          <div class="sinistro-anim-toggle-wrap">
+            <button type="button" id="btn-toggle-anim-sinistro" class="btn-link-clean" onclick="Championship.toggleAnimations()">
+              ${animationsActive ? '🎬 Animações: Ativadas (Clique para desativar)' : '⏸️ Animações: Desativadas (Clique para ativar)'}
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Narração Acessível
+    replaySinistroAudio();
+  }
+
+  function replaySinistroAudio() {
+    if (typeof AudioEngine !== 'undefined') {
+      AudioEngine.playWin();
+      setTimeout(() => {
+        AudioEngine.speak('Parabéns! Você é sinistro no Braille! Você completou dois desafios seguidos no nível Insano.');
+      }, 500);
+    }
+  }
+
+  function closeSinistroCelebrationModal() {
+    const modalContainer = document.getElementById('modal-sinistro-container');
     if (modalContainer) modalContainer.innerHTML = '';
   }
 
@@ -1064,7 +1252,11 @@ const Championship = (() => {
     closeConfirmLogoutModal,
     openModalConfirmExitGame,
     closeConfirmExitGameModal,
-    closeMatchResultModal
+    closeMatchResultModal,
+    closeSinistroCelebrationModal,
+    replaySinistroAudio,
+    toggleAnimations,
+    isAnimationsEnabled
   };
 })();
 

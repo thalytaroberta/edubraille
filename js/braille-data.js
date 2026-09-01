@@ -235,6 +235,400 @@ function renderInteractiveEmptyCellHTML(cellId, currentDots = [], onToggleFuncti
 
 // BANCO DE DADOS ORGANIZADO POR TEMAS E NÍVEIS (INICIANTE, INTERMEDIÁRIO, AVANÇADO, INSANO)
 const THEMATIC_DATABASES = {
+  pernambuco: {
+    iniciante: [
+      { word: 'SOL', hint: 'Brilha forte no litoral de Pernambuco' },
+      { word: 'MAR', hint: 'Águas quentes das praias pernambucanas' },
+      { word: 'BOLO', hint: 'Bolo de rolo, patrimônio cultural de Pernambuco' },
+      { word: 'COCO', hint: 'Dança e ritmo tradicional do litoral pernambucano' }
+    ],
+    intermediario: [
+      { word: 'FREVO', hint: 'Dança e ritmo acelerado com sombrinha colorida de Pernambuco' },
+      { word: 'RECIFE', hint: 'Capital de Pernambuco, a Veneza Brasileira' },
+      { word: 'OLINDA', hint: 'Cidade histórica dos bonecos gigantes e ladeiras' },
+      { word: 'CIRANDA', hint: 'Dança circular praiana famosa em Itamaracá' },
+      { word: 'CABOCLO', hint: 'Caboclo de lança, símbolo do Maracatu Rural' }
+    ],
+    avancado: [
+      { word: 'MARACATU', hint: 'Manifestação cultural afro-brasileira dos baques virados e soltos' },
+      { word: 'CAPIBARIBE', hint: 'Rio lendário que corta a cidade do Recife' },
+      { word: 'MANGUEBEAT', hint: 'Movimento musical recifense liderado por Chico Science' },
+      { word: 'PATRIMONIO', hint: 'Riqueza histórica e imaterial do povo pernambucano' }
+    ],
+    insano: [
+      { word: 'GALODAMADRUGADA', hint: 'O maior bloco de Carnaval do planeta Terra no Recife' },
+      { word: 'ALTOJOSEDOPIBHO', hint: 'Bairro histórico da resistência cultural recifense' },
+      { word: 'REVOLUCAOPERNAMBUCANA', hint: 'Movimento libertário de 1817 em terras pernambucanas' },
+      { word: 'CARNAVALDEPERNAMBUCO', hint: 'A maior festa popular inclusiva e democrática' }
+    ]
+  },
+  influenciadores: {
+    iniciante: [
+      { word: 'LIVE', hint: 'Transmissão ao vivo nas redes digitais' },
+      { word: 'POST', hint: 'Publicação de foto ou mensagem na rede' },
+      { word: 'LIKE', hint: 'Curtida demonstrando aprovação do conteúdo' },
+      { word: 'FOTO', hint: 'Imagem compartilhada no perfil social' }
+    ],
+    intermediario: [
+      { word: 'CANAL', hint: 'Espaço onde o criador posta seus vídeos' },
+      { word: 'VLOG', hint: 'Vídeo mostrando a rotina e o dia a dia' },
+      { word: 'STORY', hint: 'Vídeo curto e temporário nas redes' },
+      { word: 'CRIADOR', hint: 'Pessoa que produz conteúdo digital original' },
+      { word: 'SEGUIDOR', hint: 'Pessoa que acompanha o trabalho do influenciador' }
+    ],
+    avancado: [
+      { word: 'STREAMER', hint: 'Apresentador que transmite jogos e conversas ao vivo' },
+      { word: 'PODCASTER', hint: 'Comunicador que grava programas de áudio e entrevistas' },
+      { word: 'AUDIENCIA', hint: 'Público que assiste e interage com os conteúdos' },
+      { word: 'ENGAJAMENTO', hint: 'Interação de comentários e compartilhamentos' }
+    ],
+    insano: [
+      { word: 'INFLUENCIADORDIGITAL', hint: 'Profissional com grande alcance e voz nas redes' },
+      { word: 'PRODUCAODECONTEUDO', hint: 'Elaboração criativa e técnica de mídias digitais' },
+      { word: 'COMUNIDADEDIGITAL', hint: 'Grupo de pessoas conectadas por afinidades e ideias' },
+      { word: 'CRIATIVIDADEONLINE', hint: 'Capacidade de inovar em formatos e narrativas' }
+    ]
+  },
+  nordeste: {
+    iniciante: [
+      { word: 'SERTAO', hint: 'Região do interior nordestino de solo forte e sol quente' },
+      { word: 'CUSCUZ', hint: 'Alimento de milho tradicional no café do nordestino' },
+      { word: 'BAIAO', hint: 'Ritmo musical nordestino imortalizado por Luiz Gonzaga' },
+      { word: 'REDES', hint: 'Usada para descanso nas varandas nordestinas' }
+    ],
+    intermediario: [
+      { word: 'CORDEL', hint: 'Folhetos de versos rimados e xilogravura' },
+      { word: 'VAQUEIRO', hint: 'Trabalhador corajoso do sertão vestido de couro' },
+      { word: 'CAATINGA', hint: 'Bioma exclusivamente brasileiro do semiárido nordestino' },
+      { word: 'MANDACARU', hint: 'Cacto forte que floresce no sertão nordestino' }
+    ],
+    avancado: [
+      { word: 'LITERATURA', hint: 'Narrativas ricas da prosa e poesia do Nordeste' },
+      { word: 'FORROBODO', hint: 'Grande festa com sanfona, zabumba e triângulo' },
+      { word: 'REGIONALISMO', hint: 'Valorização da fala e costumes nordestinos' },
+      { word: 'IDENTIDADE', hint: 'Orgulho e representatividade da cultura do Nordeste' }
+    ],
+    insano: [
+      { word: 'CULTURANORDESTINA', hint: 'Conjunto de manifestações ricas e históricas do Nordeste' },
+      { word: 'DIVERSIDADECULTURAL', hint: 'Múltiplas tradições do litoral ao sertão' },
+      { word: 'ASABRANCALUIZGONZAGA', hint: 'Hino afetivo do povo nordestino sobre o sertão' },
+      { word: 'RESISTENCIACULTURAL', hint: 'Força e perseverança histórica do povo nordestino' }
+    ]
+  },
+  ingles: {
+    iniciante: [
+      { word: 'BOOK', hint: 'Palavra em inglês para "livro"' },
+      { word: 'SUN', hint: 'Palavra em inglês para "sol"' },
+      { word: 'STAR', hint: 'Palavra em inglês para "estrela"' },
+      { word: 'BLUE', hint: 'Palavra em inglês para a cor "azul"' }
+    ],
+    intermediario: [
+      { word: 'FRIEND', hint: 'Palavra em inglês para "amigo"' },
+      { word: 'SCHOOL', hint: 'Palavra em inglês para "escola"' },
+      { word: 'FAMILY', hint: 'Palavra em inglês para "família"' },
+      { word: 'TEACHER', hint: 'Palavra em inglês para "professor"' }
+    ],
+    avancado: [
+      { word: 'EDUCATION', hint: 'Palavra em inglês para "educação"' },
+      { word: 'INCLUSION', hint: 'Palavra em inglês para "inclusão"' },
+      { word: 'KNOWLEDGE', hint: 'Palavra em inglês para "conhecimento"' },
+      { word: 'BRAILLE', hint: 'Nome do sistema tátil de leitura em inglês' }
+    ],
+    insano: [
+      { word: 'SPECIALEDUCATION', hint: 'Termo em inglês para Educação Especial e AEE' },
+      { word: 'ACCESSIBILITYNOW', hint: 'Expressão em inglês para Acessibilidade Imediata' },
+      { word: 'INCLUSIVETOGETHER', hint: 'Expressão em inglês para Juntos e Inclusivos' },
+      { word: 'TOUCHANDLEARN', hint: 'Expressão em inglês para Tocar e Aprender' }
+    ]
+  },
+  espanhol: {
+    iniciante: [
+      { word: 'HOLA', hint: 'Saudação de cumprimento em espanhol ("olá")' },
+      { word: 'LUZ', hint: 'Palavra em espanhol para claridade' },
+      { word: 'CASA', hint: 'Lugar onde moramos em espanhol' },
+      { word: 'AMOR', hint: 'Sentimento afetuoso em espanhol' }
+    ],
+    intermediario: [
+      { word: 'LIBRO', hint: 'Palavra em espanhol para "livro"' },
+      { word: 'AMIGO', hint: 'Companheiro querido em espanhol' },
+      { word: 'ESCUELA', hint: 'Local de estudos e aprendizado em espanhol' },
+      { word: 'HERMANO', hint: 'Irmão na língua espanhola' }
+    ],
+    avancado: [
+      { word: 'ESPERANZA', hint: 'Palavra em espanhol para esperança' },
+      { word: 'INCLUSION', hint: 'Acolhimento e igualdade em espanhol' },
+      { word: 'DIVERSIDAD', hint: 'Reconhecimento das diferenças em espanhol' },
+      { word: 'MAESTRO', hint: 'Professor e educador em espanhol' }
+    ],
+    insano: [
+      { word: 'EDUCACIONESPECIAL', hint: 'Educação inclusiva e especializada em espanhol' },
+      { word: 'ACCESIBILIDADTOTAL', hint: 'Acessibilidade universal para todos em espanhol' },
+      { word: 'APRENDIZAJECOMPARTIDO', hint: 'Aprendizagem solidária em espanhol' },
+      { word: 'SOLIDARIDADHUMANA', hint: 'Apoio mútuo e carinho fraternal em espanhol' }
+    ]
+  },
+  alemao: {
+    iniciante: [
+      { word: 'BUCH', hint: 'Palavra em alemão para "livro"' },
+      { word: 'TAG', hint: 'Palavra em alemão para "dia"' },
+      { word: 'GUT', hint: 'Palavra em alemão para "bom" ou "bem"' },
+      { word: 'SONNE', hint: 'Palavra em alemão para "sol"' }
+    ],
+    intermediario: [
+      { word: 'SCHULE', hint: 'Palavra em alemão para "escola"' },
+      { word: 'FREUND', hint: 'Palavra em alemão para "amigo"' },
+      { word: 'LERNEN', hint: 'Verbo em alemão para "aprender"' },
+      { word: 'SPRACHE', hint: 'Palavra em alemão para "idioma" ou "língua"' }
+    ],
+    avancado: [
+      { word: 'BILDUNG', hint: 'Palavra em alemão para "educação" e formação cultural' },
+      { word: 'WISSEN', hint: 'Palavra em alemão para "conhecimento" e saber' },
+      { word: 'ZUKUNFT', hint: 'Palavra em alemão para "futuro"' },
+      { word: 'FREIHEIT', hint: 'Palavra em alemão para "liberdade"' }
+    ],
+    insano: [
+      { word: 'BARRIEREFREIHEIT', hint: 'Conceito em alemão para acessibilidade sem barreiras' },
+      { word: 'INKLUSIVEBILDUNG', hint: 'Educação inclusiva na língua alemã' },
+      { word: 'GEMEINSAMSTARK', hint: 'Expressão em alemão para "juntos somos fortes"' },
+      { word: 'MENSCHENRECHTE', hint: 'Conceito em alemão para Direitos Humanos' }
+    ]
+  },
+  italiano: {
+    iniciante: [
+      { word: 'SOLE', hint: 'Palavra em italiano para "sol"' },
+      { word: 'MARE', hint: 'Palavra em italiano para "mar"' },
+      { word: 'CASA', hint: 'Lar em italiano' },
+      { word: 'VITA', hint: 'Palavra em italiano para "vida"' }
+    ],
+    intermediario: [
+      { word: 'LIBRO', hint: 'Palavra em italiano para "livro"' },
+      { word: 'SCUOLA', hint: 'Palavra em italiano para "escola"' },
+      { word: 'AMICO', hint: 'Amigo na língua italiana' },
+      { word: 'CUORE', hint: 'Coração em italiano' }
+    ],
+    avancado: [
+      { word: 'SPERANZA', hint: 'Palavra em italiano para esperança' },
+      { word: 'RISPETTO', hint: 'Palavra em italiano para respeito mútuo' },
+      { word: 'INCLUSIONE', hint: 'Palavra em italiano para inclusão' },
+      { word: 'CONOSCENZA', hint: 'Palavra em italiano para conhecimento e saber' }
+    ],
+    insano: [
+      { word: 'ACCESSIBILITATOTALE', hint: 'Acessibilidade plena em italiano' },
+      { word: 'EDUCAZIONEINCLUSIVA', hint: 'Educação para todos na língua italiana' },
+      { word: 'FRATELLANZAUMANA', hint: 'Fraternidade entre as pessoas em italiano' },
+      { word: 'DIRITTIUNIVERSALI', hint: 'Direitos fundamentais de todos os seres' }
+    ]
+  },
+  grego: {
+    iniciante: [
+      { word: 'ALFA', hint: 'Primeira letra do alfabeto grego' },
+      { word: 'BETA', hint: 'Segunda letra do alfabeto grego' },
+      { word: 'DELTA', hint: 'Quarta letra do alfabeto grego em forma de triângulo' },
+      { word: 'OMEGA', hint: 'Última letra do alfabeto grego clássico' }
+    ],
+    intermediario: [
+      { word: 'LOGOS', hint: 'Conceito grego de razão, palavra e pensamento' },
+      { word: 'ETHOS', hint: 'Conceito grego para caráter, moral e ética' },
+      { word: 'POLIS', hint: 'Cidade-Estado na Grécia Antiga' },
+      { word: 'COSMOS', hint: 'O universo ordenado e harmonioso na visão grega' }
+    ],
+    avancado: [
+      { word: 'FILOSOFIA', hint: 'Amor à sabedoria e busca do conhecimento racional' },
+      { word: 'DEMOCRACIA', hint: 'Governo do povo nascido na Grécia clássica' },
+      { word: 'HARMONIA', hint: 'Equilíbrio e concórdia entre as partes' },
+      { word: 'EPISTEME', hint: 'Conhecimento científico e verdadeiro em grego' }
+    ],
+    insano: [
+      { word: 'PENSAMENTOCRITICO', hint: 'Legado socrático de questionar e refletir' },
+      { word: 'SABEDORIAANCESTRAL', hint: 'Conhecimento acumulado ao longo das gerações' },
+      { word: 'ETICAECIDADANIA', hint: 'Conduta justa em sociedade inspirada na filosofia' },
+      { word: 'CONHECETEATIMESMO', hint: 'Famosa máxima do Oráculo de Delfos na Grécia' }
+    ]
+  },
+  biblia_crista: {
+    iniciante: [
+      { word: 'DEUS', hint: 'Criador e Senhor supremo na fé cristã' },
+      { word: 'AMOR', hint: 'O maior mandamento ensinado nas Escrituras' },
+      { word: 'PAZ', hint: 'Harmonia e reconciliação espiritual' },
+      { word: 'LUZ', hint: 'Símbolo da verdade divina que ilumina o caminho' }
+    ],
+    intermediario: [
+      { word: 'SALMOS', hint: 'Livro bíblico de hinos, orações e louvores' },
+      { word: 'GENESIS', hint: 'Primeiro livro da Bíblia sobre a criação' },
+      { word: 'PROVERBIOS', hint: 'Livro de conselhos e sabedoria prática' },
+      { word: 'APOSTOLO', hint: 'Discípulo enviado para anunciar a mensagem' }
+    ],
+    avancado: [
+      { word: 'EVANGELHO', hint: 'Boa Nova sobre os ensinamentos de Jesus Cristo' },
+      { word: 'TESTAMENTO', hint: 'Divisão bíblica entre Antigo e Novo Testamento' },
+      { word: 'SACRIFICIO', hint: 'Ato de amor e entrega pela salvação' },
+      { word: 'PARABOLA', hint: 'História pedagógica com lição moral e espiritual' }
+    ],
+    insano: [
+      { word: 'SAGRADASESCRITURAS', hint: 'Conjunto dos livros canônicos inspirados por Deus' },
+      { word: 'AMORAOPROXIMO', hint: 'Princípio de compaixão e caridade cristã' },
+      { word: 'SERMAODAMONTANHA', hint: 'Mensagem das Bem-Aventuranças sobre humildade e paz' },
+      { word: 'ALIANCAETERNA', hint: 'Pacto de misericórdia e fidelidade com a humanidade' }
+    ]
+  },
+  biblia_evangelica: {
+    iniciante: [
+      { word: 'GRACA', hint: 'Favor imerecido concedido por Deus' },
+      { word: 'CRUZ', hint: 'Símbolo da redenção e vitória de Jesus' },
+      { word: 'VIDA', hint: 'Vida abundante concedida pela fé' },
+      { word: 'ORAR', hint: 'Conversar com Deus com sinceridade de coração' }
+    ],
+    intermediario: [
+      { word: 'LOUVOR', hint: 'Cântico de exaltação e adoração a Deus' },
+      { word: 'ORACAO', hint: 'Comunicação diária com o Criador' },
+      { word: 'PASTOR', hint: 'Líder que cuida e orienta o rebanho' },
+      { word: 'MISSAO', hint: 'Propósito de levar esperança e acolhimento' }
+    ],
+    avancado: [
+      { word: 'REDENCAO', hint: 'Libertação e salvação por meio de Cristo' },
+      { word: 'DEVOCIONAL', hint: 'Momento diário de leitura bíblica e reflexão' },
+      { word: 'COMUNHAO', hint: 'União fraternal entre os membros da congregação' },
+      { word: 'DISCIPULO', hint: 'Seguidor dedicado aos ensinamentos bíblicos' }
+    ],
+    insano: [
+      { word: 'TESTEMUNHODEFE', hint: 'Manifestação viva da confiança no Evangelho' },
+      { word: 'GRACAINCONDICIONAL', hint: 'O amor gratuito e transformador de Deus' },
+      { word: 'JUSTIFICACAOPELAFE', hint: 'Princípio bíblico reformado de salvação' },
+      { word: 'VIDANOSPIRITO', hint: 'Caminhada diária com amor, alegria e mansidão' }
+    ]
+  },
+  tora_judaismo: {
+    iniciante: [
+      { word: 'TORA', hint: 'Livro sagrado e ensinamento divino do judaísmo' },
+      { word: 'SHALOM', hint: 'Saudação hebraica de paz e plenitude' },
+      { word: 'PAZ', hint: 'Desejo de concórdia entre todas as pessoas' },
+      { word: 'LUZ', hint: 'Símbolo do conhecimento e da santidade' }
+    ],
+    intermediario: [
+      { word: 'SHABBAT', hint: 'Dia sagrado de descanso e espiritualidade' },
+      { word: 'MITZVA', hint: 'Mandamento e boa ação prescrita na Torá' },
+      { word: 'MENORA', hint: 'Candelabro sagrado de sete braços' },
+      { word: 'MOSHE', hint: 'Moisés, o profeta e líder do povo de Israel' }
+    ],
+    avancado: [
+      { word: 'BERESHIT', hint: 'Primeira palavra da Torá ("No princípio")' },
+      { word: 'SINAGOGA', hint: 'Casa de oração e estudo das escrituras judaicas' },
+      { word: 'TRADICAO', hint: 'Transmissão de preceitos de geração em geração' },
+      { word: 'RABINO', hint: 'Mestre espiritual e intérprete da lei judaica' }
+    ],
+    insano: [
+      { word: 'ESCRITURASSAGRADAS', hint: 'Texto revelado transmitido no Monte Sinai' },
+      { word: 'TIKKUNOLAM', hint: 'Princípio judaico de reparar e aperfeiçoar o mundo' },
+      { word: 'CINCOLIVROSDEMOISES', hint: 'Pentateuco sagrado base do judaísmo' },
+      { word: 'MEMORIAHISTORICA', hint: 'Lembrança viva da jornada de libertação do povo' }
+    ]
+  },
+  islamismo: {
+    iniciante: [
+      { word: 'ISLA', hint: 'Palavra que significa paz e submissão a Deus' },
+      { word: 'IMAN', hint: 'Fé e crença sincera no coração' },
+      { word: 'DEUS', hint: 'O Deus único adorado no islamismo (Alá)' },
+      { word: 'PAZ', hint: 'Saudação fraterna entre os muçulmanos' }
+    ],
+    intermediario: [
+      { word: 'ALCORAO', hint: 'Livro sagrado revelado ao Profeta Maomé' },
+      { word: 'MESQUITA', hint: 'Templo de oração e acolhimento dos fiéis' },
+      { word: 'RAMADAN', hint: 'Mês sagrado de jejum, caridade e reflexão' },
+      { word: 'ZAKAT', hint: 'Caridade obrigatória em apoio aos necessitados' }
+    ],
+    avancado: [
+      { word: 'PEREGRINACAO', hint: 'A viagem sagrada (Hajj) à cidade de Meca' },
+      { word: 'PROFETA', hint: 'Mensageiro escolhido para transmitir a palavra' },
+      { word: 'SOLIDARIO', hint: 'Compromisso ético de fraternidade social' },
+      { word: 'ESPIRITUAL', hint: 'Busca pela elevação da alma e virtude' }
+    ],
+    insano: [
+      { word: 'SAGRADOALCORAO', hint: 'A revelação divina preservada em língua árabe' },
+      { word: 'CINCOPILARES', hint: 'Bases fundamentais de prática da fé islâmica' },
+      { word: 'FRATERNIDADEUNIVERSAL', hint: 'União e respeito entre todos os povos' },
+      { word: 'JUSTICASOCIALNOISLA', hint: 'Princípio ético de cuidado aos mais vulneráveis' }
+    ]
+  },
+  indigenas: {
+    iniciante: [
+      { word: 'OCA', hint: 'Habitação tradicional em aldeias indígenas' },
+      { word: 'PAJE', hint: 'Líder espiritual e conhecedor de ervas medicinais' },
+      { word: 'TUPA', hint: 'Força criadora e trovão na cosmologia tupi' },
+      { word: 'TABA', hint: 'Conjunto de ocas de uma aldeia indígena' }
+    ],
+    intermediario: [
+      { word: 'ALDEIA', hint: 'Comunidade onde vivem os povos originários' },
+      { word: 'CACIQUE', hint: 'Líder político e comunitário da aldeia' },
+      { word: 'MARACA', hint: 'Instrumento musical ritualístico indígena' },
+      { word: 'GUARANI', hint: 'Povo originário com rica tradição linguística' },
+      { word: 'PANKARARU', hint: 'Povo indígena originário do sertão de Pernambuco' }
+    ],
+    avancado: [
+      { word: 'ANCESTRAL', hint: 'Sabedoria transmitida pelos antepassados' },
+      { word: 'TERRITORIO', hint: 'Terra sagrada onde se preserva a cultura' },
+      { word: 'BIODIVERSIDADE', hint: 'Proteção e respeito integral à floresta' },
+      { word: 'ORIGINARIO', hint: 'Primeiros habitantes legítimos do território brasileiro' }
+    ],
+    insano: [
+      { word: 'POVOSORIGINARIOS', hint: 'Sociedades tradicionais com saberes milenares' },
+      { word: 'IDENTIDADEINDIGENA', hint: 'Orgulho das línguas, costumes e cosmologias' },
+      { word: 'PRESERVACAOCULTURAL', hint: 'Defesa das tradições e memórias dos povos da terra' },
+      { word: 'SABERESFLORESTAIS', hint: 'Conhecimento profundo das plantas, águas e animais' }
+    ]
+  },
+  quilombolas_matriz_africana: {
+    iniciante: [
+      { word: 'AXE', hint: 'Energia vital, força sagrada e cumprimento positivo' },
+      { word: 'TAMBOR', hint: 'Instrumento sagrado de percussão que conduz os toques' },
+      { word: 'ORIXA', hint: 'Divindade e força da natureza na tradição de matriz africana' },
+      { word: 'TERRA', hint: 'Base sagrada de vida nas comunidades quilombolas' }
+    ],
+    intermediario: [
+      { word: 'QUILOMBO', hint: 'Comunidade histórica de resistência e liberdade negra' },
+      { word: 'PALMARES', hint: 'Maior quilombo da história, liderado por Zumbi e Dandara' },
+      { word: 'BERIMBAU', hint: 'Instrumento com arco de madeira e arame da capoeira' },
+      { word: 'CAPOEIRA', hint: 'Arte marcial, dança e jogo de resistência afro-brasileira' },
+      { word: 'CANDOMBLE', hint: 'Religião de matriz africana que reverencia a natureza' }
+    ],
+    avancado: [
+      { word: 'ANCESTRALIDADE', hint: 'Conexão sagrada com a memória dos antepassados' },
+      { word: 'RESISTENCIA', hint: 'Luta contínua pela dignidade, terra e liberdade' },
+      { word: 'AFROBRASILEIRO', hint: 'Herança cultural viva que constrói a nação' },
+      { word: 'TERREIRO', hint: 'Espaço sagrado comunitário de acolhimento e fé' }
+    ],
+    insano: [
+      { word: 'CULTURAAFROBRASILEIRA', hint: 'Riqueza artística, musical e espiritual do Brasil' },
+      { word: 'COMUNIDADEQUILOMBOLA', hint: 'Território tradicional de autonomia e cultura' },
+      { word: 'HERANCAANCESTRAL', hint: 'Sabedoria transmitida de geração em geração pelo afeto' },
+      { word: 'ZUMBIDOSPALMARES', hint: 'Herói nacional líder da resistência contra a escravidão' }
+    ]
+  },
+  budismo: {
+    iniciante: [
+      { word: 'ZEN', hint: 'Prática de quietude mental e simplicidade' },
+      { word: 'BUDA', hint: 'Aquele que despertou para a verdade plena' },
+      { word: 'PAZ', hint: 'Harmonia profunda no coração e na mente' },
+      { word: 'MENTE', hint: 'Espaço de clareza e autoconhecimento' }
+    ],
+    intermediario: [
+      { word: 'DHARMA', hint: 'A lei universal e os ensinamentos budistas' },
+      { word: 'KARMA', hint: 'Lei de causa e efeito das ações e pensamentos' },
+      { word: 'NIRVANA', hint: 'Estado de cessação do sofrimento e paz total' },
+      { word: 'TEMPLO', hint: 'Lugar de prática contemplativa e acolhimento' }
+    ],
+    avancado: [
+      { word: 'MEDITACAO', hint: 'Prática de cultivar atenção plena e serenidade' },
+      { word: 'COMPAIXAO', hint: 'Desejo sincero de aliviar o sofrimento de todos' },
+      { word: 'ILUMINACAO', hint: 'Despertar da sabedoria interior e clareza' },
+      { word: 'PRESENCA', hint: 'Viver plenamente o momento presente aqui e agora' }
+    ],
+    insano: [
+      { word: 'PLENACONSCIENCIA', hint: 'Atenção e presença viva em cada respiração' },
+      { word: 'CAMINHODOMEIO', hint: 'Equilíbrio evitando extremismos e ilusões' },
+      { word: 'PAZINTERIORESERENA', hint: 'Tranquilidade inabalável diante dos desafios' },
+      { word: 'SABEDORIABUDISTA', hint: 'Ensinamentos milenares de amor e desapego' }
+    ]
+  },
   games: {
     iniciante: [
       { word: 'GAME', hint: 'Termo em inglês para jogo digital' },

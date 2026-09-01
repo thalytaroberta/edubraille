@@ -215,35 +215,33 @@ const GameFeed = (() => {
 
         <div class="filter-group theme-filter-group">
           <label for="theme-category-select" class="filter-label">🏷️ Tema:</label>
-          <select id="theme-category-select" class="theme-select-dropdown" aria-label="Escolher tema de palavras">
-            <option value="aleatorio"    ${activeCategoryTheme === 'aleatorio'  ? 'selected' : ''}>🎲 Aleatório (Misturar Todos)</option>
-            <option value="games"        ${activeCategoryTheme === 'games'      ? 'selected' : ''}>🎮 Games & Videogames</option>
-            <option value="internet"     ${activeCategoryTheme === 'internet'   ? 'selected' : ''}>🌐 Internet & Cultura Digital</option>
-            <option value="musica"       ${activeCategoryTheme === 'musica'     ? 'selected' : ''}>🎵 Música & Instrumentos</option>
-            <option value="filmes"       ${activeCategoryTheme === 'filmes'     ? 'selected' : ''}>🎬 Filmes & Animações</option>
-            <option value="anime"        ${activeCategoryTheme === 'anime'      ? 'selected' : ''}>🍥 Anime & Otaku</option>
-            <option value="fantasia"     ${activeCategoryTheme === 'fantasia'   ? 'selected' : ''}>🧙 Fantasia & Aventura</option>
-            <option value="misterio"     ${activeCategoryTheme === 'misterio'   ? 'selected' : ''}>🕵️ Mistério & Enigmas</option>
-            <option value="esportes"     ${activeCategoryTheme === 'esportes'   ? 'selected' : ''}>🏆 Esportes</option>
-            <option value="animais"      ${activeCategoryTheme === 'animais'    ? 'selected' : ''}>🐶 Animais</option>
-            <option value="ciencia"      ${activeCategoryTheme === 'ciencia'    ? 'selected' : ''}>🔬 Ciência</option>
-            <option value="espaco"       ${activeCategoryTheme === 'espaco'     ? 'selected' : ''}>🚀 Espaço & Astros</option>
-            <option value="tecnologia"   ${activeCategoryTheme === 'tecnologia' ? 'selected' : ''}>🤖 Tecnologia & Robótica</option>
-            <option value="brasil"       ${activeCategoryTheme === 'brasil'     ? 'selected' : ''}>🇧🇷 Brasil & Cultura</option>
-            <option value="mundo"        ${activeCategoryTheme === 'mundo'      ? 'selected' : ''}>🌎 Mundo & Países</option>
-            <option value="historia"     ${activeCategoryTheme === 'historia'   ? 'selected' : ''}>🏛️ História</option>
-            <option value="geografia"    ${activeCategoryTheme === 'geografia'  ? 'selected' : ''}>🗺️ Geografia</option>
-            <option value="arte"         ${activeCategoryTheme === 'arte'       ? 'selected' : ''}>🎨 Arte & Criatividade</option>
-            <option value="moda"         ${activeCategoryTheme === 'moda'       ? 'selected' : ''}>👟 Moda & Estilo</option>
-            <option value="comida"       ${activeCategoryTheme === 'comida'     ? 'selected' : ''}>🍕 Comida & Gastronomia</option>
-            <option value="natureza"     ${activeCategoryTheme === 'natureza'   ? 'selected' : ''}>🌱 Natureza</option>
-            <option value="profissoes"   ${activeCategoryTheme === 'profissoes' ? 'selected' : ''}>👩‍🚀 Profissões</option>
-            <option value="vidareal"     ${activeCategoryTheme === 'vidareal'   ? 'selected' : ''}>💡 Vida Real & Cidadania</option>
-            <option value="curiosidades" ${activeCategoryTheme === 'curiosidades'? 'selected' : ''}>🤯 Curiosidades</option>
-            <option value="desafios"    ${activeCategoryTheme === 'desafios'   ? 'selected' : ''}>🧠 Desafios Mentais</option>
-            <option value="emojis"      ${activeCategoryTheme === 'emojis'     ? 'selected' : ''}>😎 Desafio Emoji</option>
-            <option value="palavras"    ${activeCategoryTheme === 'palavras'   ? 'selected' : ''}>🔤 Palavra & Linguagem</option>
-            <option value="libras"      ${activeCategoryTheme === 'libras'     ? 'selected' : ''}>🤟 Libras & Acessibilidade</option>
+          <select id="theme-category-select" class="theme-select-dropdown" aria-label="Escolher tema de palavras dos jogos">
+            <option value="aleatorio"                  ${activeCategoryTheme === 'aleatorio'                  ? 'selected' : ''}>🎲 Aleatório (Misturar Todos)</option>
+            <option value="pernambuco"                 ${activeCategoryTheme === 'pernambuco'                 ? 'selected' : ''}>🦁 Pernambuco</option>
+            <option value="influenciadores"            ${activeCategoryTheme === 'influenciadores'            ? 'selected' : ''}>📱 Influenciadores</option>
+            <option value="nordeste"                   ${activeCategoryTheme === 'nordeste'                   ? 'selected' : ''}>🌵 Nordeste</option>
+            <option value="ingles"                     ${activeCategoryTheme === 'ingles'                     ? 'selected' : ''}>🇬🇧 Inglês</option>
+            <option value="espanhol"                   ${activeCategoryTheme === 'espanhol'                   ? 'selected' : ''}>🇪🇸 Espanhol</option>
+            <option value="alemao"                     ${activeCategoryTheme === 'alemao'                     ? 'selected' : ''}>🇩🇪 Alemão</option>
+            <option value="italiano"                   ${activeCategoryTheme === 'italiano'                   ? 'selected' : ''}>🇮🇹 Italiano</option>
+            <option value="grego"                      ${activeCategoryTheme === 'grego'                      ? 'selected' : ''}>🏛️ Grego</option>
+            <option value="biblia_crista"              ${activeCategoryTheme === 'biblia_crista'              ? 'selected' : ''}>✝️ Bíblia Cristã</option>
+            <option value="biblia_evangelica"          ${activeCategoryTheme === 'biblia_evangelica'          ? 'selected' : ''}>📖 Bíblia Evangélica</option>
+            <option value="tora_judaismo"              ${activeCategoryTheme === 'tora_judaismo'              ? 'selected' : ''}>📜 Torá — livro sagrado do judaísmo</option>
+            <option value="islamismo"                  ${activeCategoryTheme === 'islamismo'                  ? 'selected' : ''}>🌙 Islamismo</option>
+            <option value="indigenas"                  ${activeCategoryTheme === 'indigenas'                  ? 'selected' : ''}>🏹 Povos Originários — Indígenas</option>
+            <option value="quilombolas_matriz_africana"${activeCategoryTheme === 'quilombolas_matriz_africana'? 'selected' : ''}>🥁 Povos Originários — Quilombolas e religiões de origem africana</option>
+            <option value="budismo"                    ${activeCategoryTheme === 'budismo'                    ? 'selected' : ''}>☸️ Budismo</option>
+            <option value="games"                      ${activeCategoryTheme === 'games'                      ? 'selected' : ''}>🎮 Games & Videogames</option>
+            <option value="internet"                   ${activeCategoryTheme === 'internet'                   ? 'selected' : ''}>🌐 Internet & Cultura Digital</option>
+            <option value="musica"                     ${activeCategoryTheme === 'musica'                     ? 'selected' : ''}>🎵 Música & Instrumentos</option>
+            <option value="filmes"                     ${activeCategoryTheme === 'filmes'                     ? 'selected' : ''}>🎬 Filmes & Animações</option>
+            <option value="anime"                      ${activeCategoryTheme === 'anime'                      ? 'selected' : ''}>🍥 Anime & Otaku</option>
+            <option value="esportes"                   ${activeCategoryTheme === 'esportes'                   ? 'selected' : ''}>🏆 Esportes</option>
+            <option value="animais"                    ${activeCategoryTheme === 'animais'                    ? 'selected' : ''}>🐶 Animais</option>
+            <option value="ciencia"                    ${activeCategoryTheme === 'ciencia'                    ? 'selected' : ''}>🔬 Ciência</option>
+            <option value="brasil"                     ${activeCategoryTheme === 'brasil'                     ? 'selected' : ''}>🇧🇷 Brasil & Cultura</option>
+            <option value="libras"                     ${activeCategoryTheme === 'libras'                     ? 'selected' : ''}>🤟 Libras & Acessibilidade</option>
           </select>
         </div>
       </div>

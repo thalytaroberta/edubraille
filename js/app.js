@@ -18,8 +18,11 @@ const App = (() => {
   function init() {
     TeacherMode.init();
     Championship.init();
+    if (window.BrailleAssistant && window.BrailleAssistant.init) {
+      window.BrailleAssistant.init();
+    }
     
-    // Renderiza a página inicial (Feed + Banner do Campeonato)
+    // Renderiza a página inicial (Feed + Banner do Campeonato + Caixa de Dúvidas)
     returnToFeed(false);
     TeacherMode.renderReferenceChart('braille-reference-container');
 
@@ -53,8 +56,16 @@ const App = (() => {
     const feedBtn = document.getElementById('nav-btn-feed');
     if (feedBtn) feedBtn.classList.add('active');
 
-    // Renderiza o ranking da home e o catálogo
+    // 1. Renderiza a trajetória / banner do campeonato na home
     Championship.renderHomeRankingBanner('home-ranking-banner-container');
+
+    // 2. Renderiza a Caixa "Tire sua dúvida sobre Braille"
+    const qaContainer = document.getElementById('braille-qa-container');
+    if (qaContainer && window.BrailleAssistant) {
+      qaContainer.innerHTML = window.BrailleAssistant.renderQABoxHTML();
+    }
+
+    // 3. Renderiza o catálogo de jogos e categorias
     GameFeed.renderFeed('game-feed-container');
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
