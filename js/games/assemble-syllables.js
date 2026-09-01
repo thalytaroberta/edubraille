@@ -130,7 +130,36 @@ const AssembleSyllablesGame = (() => {
     `;
   }
 
-  return { init, pickSyllable, unpickSyllable, render };
+  function handleKeyInput(e) {
+    if (!e || !e.key) return;
+
+    if ((e.key.toLowerCase() === 'r' || e.key === 'Enter') && availableSyllables.length === 0) {
+      init(currentLevel);
+      return;
+    }
+
+    // Teclas 1 a 9 selecionam sílaba disponível pelo índice
+    if (e.key >= '1' && e.key <= '9') {
+      const idx = parseInt(e.key, 10) - 1;
+      if (idx >= 0 && idx < availableSyllables.length) {
+        e.preventDefault();
+        pickSyllable(availableSyllables[idx], idx);
+        return;
+      }
+    }
+
+    // Backspace / Delete desfaz a última sílaba colocada
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      if (selectedSyllables.length > 0) {
+        e.preventDefault();
+        const lastIdx = selectedSyllables.length - 1;
+        unpickSyllable(selectedSyllables[lastIdx], lastIdx);
+        return;
+      }
+    }
+  }
+
+  return { init, pickSyllable, unpickSyllable, render, handleKeyInput };
 })();
 
 window.AssembleSyllablesGame = AssembleSyllablesGame;

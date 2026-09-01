@@ -252,7 +252,56 @@ const WordSearchGame = (() => {
     `;
   }
 
-  return { init, clickCell, toggleInspectorDot, render };
+  let navR = 0;
+  let navC = 0;
+
+  function handleKeyInput(e) {
+    if (!e || !e.key) return;
+
+    if (e.key.toLowerCase() === 'r') {
+      init(currentLevel);
+      return;
+    }
+
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      navC = (navC + 1) % gridSize;
+      clickCell(navR, navC);
+      return;
+    }
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      navC = (navC - 1 + gridSize) % gridSize;
+      clickCell(navR, navC);
+      return;
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      navR = (navR + 1) % gridSize;
+      clickCell(navR, navC);
+      return;
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      navR = (navR - 1 + gridSize) % gridSize;
+      clickCell(navR, navC);
+      return;
+    }
+
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      clickCell(navR, navC);
+      return;
+    }
+
+    if (e.key >= '1' && e.key <= '6') {
+      e.preventDefault();
+      toggleInspectorDot(null, parseInt(e.key, 10));
+      return;
+    }
+  }
+
+  return { init, clickCell, toggleInspectorDot, render, handleKeyInput };
 })();
 
 window.WordSearchGame = WordSearchGame;

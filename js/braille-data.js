@@ -1040,4 +1040,6 @@ window.getCharInfo = getCharInfo;
 window.renderDualCellHTML = renderDualCellHTML;
 window.dotsToChar = dotsToChar;
 window.textToBrailleSequence = textToBrailleSequence;
+window.GAME_DATABASES = GAME_DATABASES;
+
 

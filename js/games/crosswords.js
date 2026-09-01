@@ -300,7 +300,80 @@ const DirectCrosswordGame = (() => {
     }
   }
 
-  return { init, selectCrosswordCell, toggleCellDot, toggleCellDotFromBuilder, toggleInputMode, clearCell, render };
+  function handleKeyInput(e) {
+    if (!e || !e.key) return;
+
+    // Se nenhuma célula estiver selecionada, seleciona a primeira célula válida
+    if (!selectedCell) {
+      for (const w of puzzleData.words) {
+        selectedCell = { r: w.row, c: w.col };
+        render();
+        break;
+      }
+    }
+
+    const { r, c } = selectedCell;
+
+    // Navegação com setas do teclado
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      selectCrosswordCell(r, Math.min(puzzleData.gridSize - 1, c + 1));
+      return;
+    }
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      selectCrosswordCell(r, Math.max(0, c - 1));
+      return;
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      selectCrosswordCell(Math.min(puzzleData.gridSize - 1, r + 1), c);
+      return;
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      selectCrosswordCell(Math.max(0, r - 1), c);
+      return;
+    }
+
+    // Teclas 1 a 6 alternam os pontos na célula selecionada
+    if (e.key >= '1' && e.key <= '6') {
+      e.preventDefault();
+      toggleCellDot(selectedCell, parseInt(e.key, 10));
+      return;
+    }
+
+    // Backspace / Delete apaga o conteúdo da célula selecionada
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      e.preventDefault();
+      clearCell(r, c);
+      return;
+    }
+
+    // Digitação direta de letras A-Z
+    const key = e.key.toUpperCase();
+    if (key.length === 1 && key >= 'A' && key <= 'Z') {
+      e.preventDefault();
+      typeDirectLetter(r, c, key);
+
+      // Avança para a próxima célula da palavra
+      const activeWord = puzzleData.words.find(w => {
+        if (w.direction === 'across' && w.row === r && c >= w.col && c < w.col + w.word.length) return true;
+        if (w.direction === 'down' && w.col === c && r >= w.row && r < w.row + w.word.length) return true;
+        return false;
+      });
+
+      if (activeWord) {
+        if (activeWord.direction === 'across' && c + 1 < activeWord.col + activeWord.word.length) {
+          selectCrosswordCell(r, c + 1);
+        } else if (activeWord.direction === 'down' && r + 1 < activeWord.row + activeWord.word.length) {
+          selectCrosswordCell(r + 1, c);
+        }
+      }
+    }
+  }
+
+  return { init, selectCrosswordCell, toggleCellDot, toggleCellDotFromBuilder, toggleInputMode, typeDirectLetter, clearCell, render, handleKeyInput };
 })();
 
 window.DirectCrosswordGame = DirectCrosswordGame;

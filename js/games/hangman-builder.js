@@ -240,7 +240,51 @@ const HangmanBuilderGame = (() => {
     `;
   }
 
-  return { init, toggleDot, submitCurrentLetter, clearBlankCell, render };
+  function handleKeyInput(e) {
+    if (!e || !e.key) return;
+
+    if (isGameOver()) {
+      if (e.key === 'Enter' || e.key.toLowerCase() === 'r') {
+        init(currentLevel);
+      }
+      return;
+    }
+
+    // Teclas 1 a 6 alternam os pontos na célula em branco
+    if (e.key >= '1' && e.key <= '6') {
+      e.preventDefault();
+      toggleDot(parseInt(e.key, 10));
+      return;
+    }
+
+    // Enter envia a letra formada
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      submitCurrentLetter();
+      return;
+    }
+
+    // Backspace / Delete ou C limpa a célula
+    if (e.key === 'Backspace' || e.key === 'Delete' || e.key.toLowerCase() === 'c') {
+      e.preventDefault();
+      clearBlankCell();
+      return;
+    }
+
+    // Digitação de letra direta (A-Z) no teclado físico
+    const key = e.key.toUpperCase();
+    if (key.length === 1 && key >= 'A' && key <= 'Z') {
+      e.preventDefault();
+      const info = getCharInfo(key);
+      if (info && info.dots) {
+        currentBlankDots = [...info.dots];
+        render();
+        submitCurrentLetter();
+      }
+    }
+  }
+
+  return { init, toggleDot, submitCurrentLetter, clearBlankCell, render, handleKeyInput };
 })();
 
 window.HangmanBuilderGame = HangmanBuilderGame;

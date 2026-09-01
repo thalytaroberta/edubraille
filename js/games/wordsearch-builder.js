@@ -303,7 +303,66 @@ const WordSearchBuilderGame = (() => {
     `;
   }
 
-  return { init, selectGridCell, toggleActiveDot, revealCellHint, render };
+  let navR = 0;
+  let navC = 0;
+
+  function handleKeyInput(e) {
+    if (!e || !e.key) return;
+
+    if (e.key.toLowerCase() === 'r') {
+      init(currentLevel);
+      return;
+    }
+
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      navC = (navC + 1) % gridSize;
+      selectGridCell(navR, navC);
+      return;
+    }
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      navC = (navC - 1 + gridSize) % gridSize;
+      selectGridCell(navR, navC);
+      return;
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      navR = (navR + 1) % gridSize;
+      selectGridCell(navR, navC);
+      return;
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      navR = (navR - 1 + gridSize) % gridSize;
+      selectGridCell(navR, navC);
+      return;
+    }
+
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      selectGridCell(navR, navC);
+      return;
+    }
+
+    if (e.key >= '1' && e.key <= '6') {
+      e.preventDefault();
+      toggleActiveDot(parseInt(e.key, 10));
+      return;
+    }
+
+    const key = e.key.toUpperCase();
+    if (key.length === 1 && key >= 'A' && key <= 'Z') {
+      e.preventDefault();
+      const info = getCharInfo(key);
+      if (info && info.dots && activeCell) {
+        gridDotsMap[`${activeCell.r}-${activeCell.c}`] = [...info.dots];
+        render();
+      }
+    }
+  }
+
+  return { init, selectGridCell, toggleActiveDot, revealCellHint, render, handleKeyInput };
 })();
 
 window.WordSearchBuilderGame = WordSearchBuilderGame;

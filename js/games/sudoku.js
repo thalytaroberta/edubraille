@@ -197,7 +197,70 @@ const SudokuGame = (() => {
     `;
   }
 
-  return { init, selectCell, setNumber, render };
+  function handleKeyInput(e) {
+    if (!e || !e.key) return;
+
+    if (e.key.toLowerCase() === 'r') {
+      init(currentLevel);
+      return;
+    }
+
+    if (!selectedCell) {
+      // Procura a primeira casa vazia/editável
+      for (let r = 0; r < size; r++) {
+        for (let c = 0; c < size; c++) {
+          if (initialGrid[r][c] === 0) {
+            selectCell(r, c);
+            break;
+          }
+        }
+        if (selectedCell) break;
+      }
+    }
+
+    if (!selectedCell) return;
+    const { r, c } = selectedCell;
+
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      selectCell(r, (c + 1) % size);
+      return;
+    }
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      selectCell(r, (c - 1 + size) % size);
+      return;
+    }
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      selectCell((r + 1) % size, c);
+      return;
+    }
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      selectCell((r - 1 + size) % size, c);
+      return;
+    }
+
+    if (e.key >= '1' && e.key <= '4') {
+      e.preventDefault();
+      setNumber(parseInt(e.key, 10));
+      return;
+    }
+
+    if (e.key === 'Backspace' || e.key === 'Delete' || e.key === '0') {
+      e.preventDefault();
+      if (initialGrid[r][c] === 0) {
+        grid[r][c] = 0;
+        AudioEngine.playClick();
+        AudioEngine.speak('Número apagado da casa.');
+        render();
+      }
+      return;
+    }
+  }
+
+  return { init, selectCell, setNumber, render, handleKeyInput };
 })();
 
 window.SudokuGame = SudokuGame;

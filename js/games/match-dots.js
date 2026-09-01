@@ -139,7 +139,30 @@ const MatchDotsGame = (() => {
     `;
   }
 
-  return { init, selectLeft, selectRight, render };
+  function handleKeyInput(e) {
+    if (!e || !e.key) return;
+
+    if (e.key.toLowerCase() === 'r') {
+      init(currentLevel);
+      return;
+    }
+
+    const key = e.key.toUpperCase();
+    if (key.length === 1 && key >= 'A' && key <= 'Z') {
+      e.preventDefault();
+      if (!selectedLeft) {
+        // Se a letra existe na coluna esquerda e ainda não foi ligada
+        const item = leftItems.find(it => it.letter === key);
+        if (item && !matches.has(key)) {
+          selectLeft(key);
+        }
+      } else {
+        selectRight(key);
+      }
+    }
+  }
+
+  return { init, selectLeft, selectRight, render, handleKeyInput };
 })();
 
 window.MatchDotsGame = MatchDotsGame;

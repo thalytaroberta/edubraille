@@ -141,7 +141,38 @@ const MathCrosswordGame = (() => {
     `;
   }
 
-  return { init, typeDigit, clearDigits, render };
+  function handleKeyInput(e) {
+    if (!e || !e.key) return;
+
+    if ((e.key.toLowerCase() === 'r' || e.key === 'Enter') && userDigits.join('') === currentProblem.answer) {
+      init(currentLevel);
+      return;
+    }
+
+    if (e.key >= '0' && e.key <= '9') {
+      e.preventDefault();
+      typeDigit(e.key);
+      return;
+    }
+
+    if (e.key === 'Backspace') {
+      e.preventDefault();
+      if (userDigits.length > 0) {
+        userDigits.pop();
+        AudioEngine.playClick();
+        render();
+      }
+      return;
+    }
+
+    if (e.key === 'Delete' || e.key.toLowerCase() === 'c') {
+      e.preventDefault();
+      clearDigits();
+      return;
+    }
+  }
+
+  return { init, typeDigit, clearDigits, render, handleKeyInput };
 })();
 
 window.MathCrosswordGame = MathCrosswordGame;

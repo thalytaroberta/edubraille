@@ -146,7 +146,36 @@ const SyllableCrosswordGame = (() => {
     `;
   }
 
-  return { init, selectSyllable, removeSyllable, render };
+  function handleKeyInput(e) {
+    if (!e || !e.key) return;
+
+    // Se pressionar R ou Enter após vitória, inicia próxima palavra
+    if ((e.key.toLowerCase() === 'r' || e.key === 'Enter') && userSyllables.length === currentItem.syllables.length) {
+      init(currentLevel);
+      return;
+    }
+
+    // Teclas 1 a 9 selecionam a sílaba correspondente do banco exibido
+    if (e.key >= '1' && e.key <= '9') {
+      const idx = parseInt(e.key, 10) - 1;
+      if (currentItem.shuffledPool && idx >= 0 && idx < currentItem.shuffledPool.length) {
+        e.preventDefault();
+        selectSyllable(currentItem.shuffledPool[idx]);
+        return;
+      }
+    }
+
+    // Backspace / Delete remove a última sílaba inserida
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+      if (userSyllables.length > 0) {
+        e.preventDefault();
+        removeSyllable(userSyllables.length - 1);
+        return;
+      }
+    }
+  }
+
+  return { init, selectSyllable, removeSyllable, render, handleKeyInput };
 })();
 
 window.SyllableCrosswordGame = SyllableCrosswordGame;

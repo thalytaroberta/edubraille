@@ -24,18 +24,23 @@
   <!-- Cabeçalho Principal -->
   <header class="site-header" role="banner">
     <div class="header-container">
-      <a href="#" class="brand-title" onclick="App.returnToFeed(); return false;" aria-label="EduBraille Games - Página Inicial">
-        <span class="brand-icon" aria-hidden="true">⠃⠗</span>
-        <span>EduBraille Games</span>
-      </a>
+      <div class="brand-wrapper">
+        <a href="#" class="brand-title" onclick="App.returnToFeed(); return false;" aria-label="EduBraille - É de Pernambuco - Página Inicial">
+          <span class="brand-icon" aria-hidden="true">⠃⠗</span>
+          <span class="brand-text">
+            <span class="brand-edu">Edu</span><span class="brand-braille">BRAILLE</span>
+          </span>
+        </a>
+        <div class="brand-tagline">É DE PERNAMBUCO</div>
+      </div>
 
       <div id="teacher-mode-badge" class="teacher-mode-badge" style="display: none;" role="status" aria-label="Modo Professor Ativo">
         🎓 Modo Professor Ativo
       </div>
 
       <nav class="header-actions" role="navigation" aria-label="Menu principal e acessibilidade">
-        <button type="button" class="btn btn-secondary nav-tab-btn active" id="nav-btn-feed" onclick="App.returnToFeed()" aria-label="Ver Catálogo de Jogos Livres">
-          🏠 Jogos Livres
+        <button type="button" class="btn btn-secondary nav-tab-btn active" id="nav-btn-feed" onclick="App.returnToFeed()" aria-label="Ver Catálogo de Jogos">
+          🏠 Jogos
         </button>
         <button type="button" class="btn btn-secondary nav-tab-btn" id="nav-btn-championship" onclick="App.showChampionshipView()" aria-label="Entrar na Categoria Campeonato">
           🏆 Campeonato
@@ -66,13 +71,13 @@
     <section class="feed-header-banner" role="region" aria-label="Boas-vindas ao EduBraille">
       <h1>Jogos Educativos de Braille</h1>
       <p>Plataforma de jogos educativos acessíveis para alunos alfabetizandos e professores de AEE (Atendimento Educacional Especializado).</p>
-      <button type="button" class="btn btn-secondary" style="margin-top: 1rem;" onclick="AudioEngine.speak('Bem-vindo ao EduBraille Games! Plataforma de jogos acessíveis em Tinta e Braille. Navegue pelas categorias: Jogos Livres, Campeonato e Professor de AEE.')">
+      <button type="button" class="btn btn-secondary" style="margin-top: 1rem;" onclick="AudioEngine.speak('Bem-vindo ao EduBraille! É de Pernambuco. Plataforma de jogos acessíveis em Tinta e Braille. Navegue pelas categorias: Jogos, Campeonato e Professor de AEE.')">
         🔊 Ouvir Apresentação do Site
       </button>
     </section>
 
-    <!-- Seção 1: Feed de Jogos Livres -->
-    <section id="feed-section" role="region" aria-label="Feed de Jogos Livres">
+    <!-- Seção 1: Feed de Jogos -->
+    <section id="feed-section" role="region" aria-label="Feed de Jogos">
       <!-- Destaque do Campeonato na Página Inicial -->
       <div id="home-ranking-banner-container" style="margin-bottom: 1.5rem;"></div>
 
@@ -100,7 +105,7 @@
       <div class="game-wrapper">
         <div class="game-header-bar">
           <h2>📖 Tabela de Referência Braille Completa</h2>
-          <button type="button" class="btn btn-secondary" onclick="App.returnToFeed()">⬅ Voltar ao Feed</button>
+          <button type="button" class="btn btn-secondary" onclick="App.returnToFeed()">⬅ Voltar ao Início</button>
         </div>
         <div id="braille-reference-container"></div>
       </div>
@@ -117,16 +122,17 @@
   <div id="modal-help" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-help-title" aria-hidden="true">
     <div class="modal-content" style="max-width: 750px;">
       <h2 id="modal-help-title">♿ Ajuda de Acessibilidade & Atalhos</h2>
-      <p style="margin-top: 0.5rem;">O site EduBraille é 100% compatível com leitores de tela (NVDA, JAWS, VoiceOver) e linhas braille USB/Bluetooth.</p>
+      <p style="margin-top: 0.5rem;">O site EduBraille é 100% compatível com o teclado físico do notebook, leitores de tela (NVDA, JAWS, VoiceOver) e linhas braille USB/Bluetooth.</p>
       
       <h3 style="margin-top: 1.25rem;">⌨️ Atalhos de Teclado Rápidos:</h3>
       <ul style="margin-left: 1.5rem; margin-top: 0.5rem; line-height: 1.8;">
+        <li><strong>Teclado Físico do Notebook:</strong> Controle primário direto nos jogos (Letras A-Z, Números 0-9, Setas e Enter funcionam imediatamente).</li>
         <li><strong>Alt + P:</strong> Ativar / Desativar o Modo Professor (Tinta + Braille lado a lado).</li>
         <li><strong>Alt + T:</strong> Alternar Tema de Cores e Alto Contraste.</li>
         <li><strong>Alt + S:</strong> Ativar / Desativar Leitura por Voz (TTS).</li>
-        <li><strong>Alt + F:</strong> Voltar rapidamente ao Feed de Jogos.</li>
+        <li><strong>Alt + F:</strong> Voltar rapidamente ao Início / Jogos.</li>
         <li><strong>Alt + H:</strong> Abrir esta janela de ajuda.</li>
-        <li><strong>Esc:</strong> Fechar janelas flutuantes ou retornar ao feed.</li>
+        <li><strong>Esc:</strong> Fechar janelas flutuantes ou retornar aos jogos.</li>
       </ul>
 
       <!-- Orientações de Adaptação Tátil do Teclado sem Linha Braille -->
@@ -161,7 +167,7 @@
 
   <!-- Rodapé com nota pedagógica -->
   <footer class="site-footer" role="contentinfo">
-    <p>EduBraille Games — Plataforma Educativa para Atendimento Educacional Especializado (AEE).</p>
+    <p>EduBraille — Plataforma Educativa para Atendimento Educacional Especializado (AEE) • É de Pernambuco.</p>
     <div class="course-footnote" style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.85rem; font-size: 0.95rem; font-weight: 700; color: var(--primary);">
       <p>Material desenvolvido no código sem fronteiras:</p>
       <p>Desenvolvimento web com IA.</p>
@@ -172,32 +178,30 @@
   </footer>
 
   <!-- Scripts Javascript Modularizados -->
-  <script src="js/braille-data.js?v=1.3.0"></script>
-  <script src="js/word-manager.js?v=1.3.0"></script>
-  <script src="js/audio-tts.js?v=1.3.0"></script>
-  <script src="js/teacher-mode.js?v=1.3.0"></script>
-  <script src="js/championship.js?v=1.3.0"></script>
+  <script src="js/braille-data.js?v=2.0.0"></script>
+  <script src="js/word-manager.js?v=2.0.0"></script>
+  <script src="js/audio-tts.js?v=2.0.0"></script>
+  <script src="js/teacher-mode.js?v=2.0.0"></script>
+  <script src="js/championship.js?v=2.0.0"></script>
 
   <!-- Jogos Ponto a Ponto com Célula em Branco -->
-  <script src="js/games/hangman-builder.js?v=1.3.0"></script>
-  <script src="js/games/wordsearch-builder.js?v=1.3.0"></script>
+  <script src="js/games/hangman-builder.js?v=2.0.0"></script>
+  <script src="js/games/wordsearch-builder.js?v=2.0.0"></script>
 
   <!-- Demais Jogos -->
-  <script src="js/games/hangman.js?v=1.3.0"></script>
-  <script src="js/games/wordsearch.js?v=1.3.0"></script>
-  <script src="js/games/crosswords.js?v=1.3.0"></script>
-  <script src="js/games/syllables-crossword.js?v=1.3.0"></script>
-  <script src="js/games/math-crossword.js?v=1.3.0"></script>
-  <script src="js/games/sudoku.js?v=1.3.0"></script>
-  <script src="js/games/memory.js?v=1.3.0"></script>
-  <script src="js/games/bingo.js?v=1.3.0"></script>
-  <script src="js/games/match-dots.js?v=1.3.0"></script>
-  <script src="js/games/assemble-syllables.js?v=1.3.0"></script>
+  <script src="js/games/hangman.js?v=2.0.0"></script>
+  <script src="js/games/wordsearch.js?v=2.0.0"></script>
+  <script src="js/games/crosswords.js?v=2.0.0"></script>
+  <script src="js/games/syllables-crossword.js?v=2.0.0"></script>
+  <script src="js/games/math-crossword.js?v=2.0.0"></script>
+  <script src="js/games/sudoku.js?v=2.0.0"></script>
+  <script src="js/games/memory.js?v=2.0.0"></script>
+  <script src="js/games/bingo.js?v=2.0.0"></script>
+  <script src="js/games/match-dots.js?v=2.0.0"></script>
+  <script src="js/games/assemble-syllables.js?v=2.0.0"></script>
 
   <!-- Feed e Controlador Global -->
-  <script src="js/feed.js?v=1.3.0"></script>
-  <script src="js/app.js?v=1.3.0"></script>
-</body>
-</html>
+  <script src="js/feed.js?v=2.0.0"></script>
+  <script src="js/app.js?v=2.0.0"></script>
 </body>
 </html>

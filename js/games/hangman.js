@@ -164,7 +164,24 @@ const HangmanGame = (() => {
     `;
   }
 
-  return { init, guessLetter, render };
+  function handleKeyInput(e) {
+    if (!e || !e.key) return;
+
+    if (isGameOver()) {
+      if (e.key === 'Enter' || e.key.toLowerCase() === 'r') {
+        init(currentLevel);
+      }
+      return;
+    }
+
+    const key = e.key.toUpperCase();
+    if (key.length === 1 && key >= 'A' && key <= 'Z') {
+      e.preventDefault();
+      guessLetter(key);
+    }
+  }
+
+  return { init, guessLetter, render, handleKeyInput };
 })();
 
 window.HangmanGame = HangmanGame;

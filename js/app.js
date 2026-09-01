@@ -240,40 +240,76 @@ const App = (() => {
     }
   }
 
+  function getCurrentGameId() {
+    return currentGameId;
+  }
+
   function setupKeyboardShortcuts() {
     document.addEventListener('keydown', (e) => {
+      // 1. Atalhos Globais com Alt
       if (e.altKey) {
         switch (e.key.toLowerCase()) {
           case 'p':
             e.preventDefault();
             TeacherMode.toggleTeacherMode();
-            break;
+            return;
           case 't':
             e.preventDefault();
             cycleTheme();
-            break;
+            return;
           case 's':
             e.preventDefault();
             toggleGlobalSpeech();
-            break;
+            return;
           case 'f':
             e.preventDefault();
             returnToFeed();
-            break;
+            return;
           case 'h':
             e.preventDefault();
             openHelpModal();
-            break;
+            return;
         }
       }
 
+      // 2. Tecla Escape para modais ou saída de jogo
       if (e.key === 'Escape') {
-        closeAllModals();
+        const anyModal = document.querySelector('.modal.show, .championship-modal-overlay');
+        if (anyModal) {
+          closeAllModals();
+          return;
+        }
         if (currentGameId) {
           if (Championship.isLoggedIn()) {
             Championship.openModalConfirmExitGame();
           } else {
             returnToFeed();
+          }
+          return;
+        }
+      }
+
+      // 3. Se estiver digitando em um input/textarea ou select de modal/formulário, não intercepta
+      const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+      const isTypingInInput = activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select';
+      if (isTypingInInput && !document.activeElement.classList.contains('game-cell-input')) {
+        return;
+      }
+
+      // 4. Se houver modal aberto na tela, não envia comandos para o jogo de fundo
+      const activeModal = document.querySelector('.modal.show');
+      if (activeModal) {
+        return;
+      }
+
+      // 5. Se houver um jogo ativo na tela (Seção game-section visível)
+      const gameSec = document.getElementById('game-section');
+      if (currentGameId && gameSec && gameSec.style.display !== 'none') {
+        const gameInfo = GameFeed.getGameById(currentGameId);
+        if (gameInfo && gameInfo.module) {
+          // Delega o evento para o manipulador unificado de teclado do jogo ativo
+          if (typeof gameInfo.module.handleKeyInput === 'function') {
+            gameInfo.module.handleKeyInput(e);
           }
         }
       }
@@ -304,6 +340,7 @@ const App = (() => {
     showChampionshipView,
     showAEETeacherDashboard,
     showReferenceChart,
+    getCurrentGameId,
     getCurrentLevel,
     setGameLevel,
     cycleTheme,

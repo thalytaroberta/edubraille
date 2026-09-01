@@ -129,7 +129,30 @@ const BingoGame = (() => {
     `;
   }
 
-  return { init, drawNextLetter, markCardLetter, render };
+  function handleKeyInput(e) {
+    if (!e || !e.key) return;
+
+    if (e.key.toLowerCase() === 'r') {
+      init();
+      return;
+    }
+
+    // Barra de espaço ou Enter sorteia a próxima letra
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      drawNextLetter();
+      return;
+    }
+
+    // Letras A-Z marcam a letra na cartela se já foi sorteada
+    const key = e.key.toUpperCase();
+    if (key.length === 1 && key >= 'A' && key <= 'Z') {
+      e.preventDefault();
+      markCardLetter(key);
+    }
+  }
+
+  return { init, drawNextLetter, markCardLetter, render, handleKeyInput };
 })();
 
 window.BingoGame = BingoGame;

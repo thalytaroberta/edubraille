@@ -148,7 +148,52 @@ const MemoryGame = (() => {
     `;
   }
 
-  return { init, flipCard, render };
+  let focusedCardIdx = 0;
+
+  function handleKeyInput(e) {
+    if (!e || !e.key) return;
+
+    if (e.key.toLowerCase() === 'r') {
+      init(currentLevel);
+      return;
+    }
+
+    // Teclas 1 a 9 e 0 (para 10) viram a carta no índice diretamente
+    if (e.key >= '1' && e.key <= '9') {
+      const idx = parseInt(e.key, 10) - 1;
+      if (idx < cards.length) {
+        e.preventDefault();
+        flipCard(idx);
+        return;
+      }
+    }
+    if (e.key === '0' && cards.length >= 10) {
+      e.preventDefault();
+      flipCard(9);
+      return;
+    }
+
+    // Navegação por setas do teclado
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      focusedCardIdx = (focusedCardIdx + 1) % cards.length;
+      AudioEngine.speak(`Carta ${focusedCardIdx + 1}`);
+      return;
+    }
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      focusedCardIdx = (focusedCardIdx - 1 + cards.length) % cards.length;
+      AudioEngine.speak(`Carta ${focusedCardIdx + 1}`);
+      return;
+    }
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      flipCard(focusedCardIdx);
+      return;
+    }
+  }
+
+  return { init, flipCard, render, handleKeyInput };
 })();
 
 window.MemoryGame = MemoryGame;
